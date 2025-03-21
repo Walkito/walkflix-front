@@ -1,10 +1,15 @@
+@if (shouldShowHeader) {
 <header>
   <div class="nav-row">
-    <img src="images/logo.png" alt="O Logo do Cinewalk">
+    <img src="images/logo.png" alt="Logo do Walkflix">
     <ul>
-      <li>FILMES</li>
-      <li>ATORES</li>
+      <li [routerLink]="['/']" routerLinkActive="active">Início</li>
+      <li>Catálogo</li>
+      <li>Atores</li>
+      <li>Personagens</li>
+      <li [routerLink]="['/director']" routerLinkActive="active">Área do Diretor</li>
     </ul>
   </div>
 </header>
+}
 <router-outlet></router-outlet>

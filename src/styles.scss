@@ -1,16 +1,18 @@
 :root {
   --black-color: #12100D;
-  --ligth-gray-color: #494640;
-  --gray-color: #2F2D2A;
-  --gray-color-2: #22201e;
-  --font: "Oswald";
+  --gray-color: rgba(0, 0, 0, 0.7);
+  --gray-hover: #E2E2E2;
+  --font: "Netflix Sans";
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('assets/fonts/NetflixSans-Regular.woff2') format('woff2');
 }
 
 body {
-  display: flex;
   margin: 0;
   padding: 0;
-  width: 100%;
   height: 90vh;
   background-color: var(--black-color);
   color: white;
@@ -23,6 +25,8 @@ body {
 
 html,
 body {
+  width: 100%;
   height: 100%;
 }
+
 

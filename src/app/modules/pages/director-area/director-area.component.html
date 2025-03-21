@@ -1,0 +1,20 @@
+<main>
+  <div class="logo-div">
+    <img src="images/logo.png" alt="Logo da Walkflix">
+  </div>
+  <div class="go-back">
+    <a [routerLink]="['/']" routerLinkActive="router-link-active"> <nz-icon nzType="arrow-left"></nz-icon>Voltar à Walkflix</a>
+  </div>
+  <div class="tree">
+    <nz-tabset nzTabPosition="left">
+      @for (tab of tabs; track tab) {
+      <nz-tab [nzTitle]="titleTemplate">
+        <ng-template #titleTemplate>
+          <nz-icon [nzType]="tab.icon" />
+          {{ tab.name }}
+        </ng-template>
+      </nz-tab>
+      }
+    </nz-tabset>
+  </div>
+</main>

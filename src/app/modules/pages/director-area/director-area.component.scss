@@ -1,0 +1,84 @@
+main {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+
+  .logo-div {
+    width: 100%;
+    margin-left: 0;
+    padding: 0;
+    border-bottom: 1px solid rgb(204, 201, 201);
+
+    img {
+      margin-left: 2%;
+      width: 20%;
+    }
+  }
+
+  .go-back {
+    display: flex;
+    width: 100%;
+    height: 15%;
+    align-items: center;
+
+    a {
+      width: 25%;
+      margin-left: 6.8%;
+      font-size: 20px;
+      text-decoration: none;
+      color: black !important;
+      transition: 0.5s;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      border-radius: 2px;
+
+      ::ng-deep .anticon {
+        margin-right: 6.5%;
+      }
+    }
+
+    a:hover {
+      background-color: var(--gray-hover)
+    }
+  }
+
+  .tree {
+    display: flex;
+    width: 100%;
+    height: 50%;
+    margin-top: 2%;
+    padding: 0;
+
+    ::ng-deep .ant-tabs {
+      width: 80%;
+      margin-left: 5%;
+
+      ::ng-deep .ant-tabs-tab {
+        width: 100%;
+        font-size: 20px;
+        color: var(--gray-color);
+      }
+
+      ::ng-deep .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+      .ant-tabs-tab-btn:focus {
+        color: black !important;
+      }
+
+      ::ng-deep .ant-tabs-ink-bar {
+        display: none;
+      }
+
+      ::ng-deep .ant-tabs-tab:hover {
+        background-color: var(--gray-hover);
+      }
+    }
+
+    ::ng-deep div.ant-tabs-content-holder {
+      border: none;
+    }
+  }
+}

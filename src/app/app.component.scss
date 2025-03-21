@@ -1,44 +1,55 @@
 header {
+  z-index: 1;
+  position: fixed;
+  width: 100%;
+  display: flex;
+
   .nav-row {
     display: flex;
-    width: 81%;
+    width: 99%;
+    margin-left: 1%;
     height: 13vh;
     justify-items: center;
     align-items: center;
-    margin-left: 19%;
 
     img {
       margin: 0;
       padding: 0;
-      width: 14%;
+      width: 15%;
+      height: 100%;
       transition: 0.75s;
+      clip-path: circle(50% at center);
     }
 
     img:hover {
-      transition: 0.75s;
-      transform: scale(1.3);
       cursor: pointer;
     }
 
     ul {
       display: flex;
+      width: 86%;
+      height: 100%;
       list-style: none;
       margin: 0;
       padding: 0;
-      font-size: 16px;
+      font-size: 14px;
+      align-items: center;
+      gap: 2%;
 
       li {
-        margin-right: 15%;
-        letter-spacing: 2px;
-        transition: 0.75s;
+        transition: 0.5s;
+      }
+
+      li:nth-child(5){
+        margin-left: 63%;
       }
 
       li:hover {
-        transition: 0.75s;
-        transform: scale(1.3);
-        color: rgb(214, 39, 39);
+        color: #A8A8A8;
         cursor: pointer;
       }
     }
   }
 }
+
+
