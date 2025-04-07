@@ -1,0 +1,129 @@
+<nz-tabset>
+  <nz-tab nzTitle="Episódios" [nzDisabled]="create">
+    <app-director-episode [serieId]="idSerie"></app-director-episode>
+  </nz-tab>
+  <nz-tab nzTitle="Série">
+    <div class="title-row">
+      <h1>{{title}}</h1>
+    </div>
+    <form nz-form [formGroup]="serieForms">
+      <div class="left-block">
+        <nz-form-item>
+          <nz-form-label nzFor="poster" nzNoColon="true"> Poster </nz-form-label>
+          <nz-form-control>
+            <div class="image-vertical-border">
+              <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 0)"
+                [nzShowUploadList]="false">
+                @if (!posterDTO.imageB64) {
+                <nz-icon class="upload-icon" nzType="plus" />
+                <div class="ant-upload-text">Enviar</div>
+                } @else {
+                <img [src]="posterDTO.imageB64" />
+                }
+              </nz-upload>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzFor="poster" nzNoColon="true"> Banner </nz-form-label>
+          <nz-form-control>
+            <div class="image-horizontal-border">
+              <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 1)"
+                [nzShowUploadList]="false">
+                @if (!bannerDTO.imageB64) {
+                <nz-icon class="upload-icon" nzType="plus" />
+                <div class="ant-upload-text">Enviar</div>
+                } @else {
+                <img [src]="bannerDTO.imageB64" />
+                }
+              </nz-upload>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzFor="poster" nzNoColon="true"> Miniatura </nz-form-label>
+          <nz-form-control>
+            <div class="image-horizontal-border">
+              <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 2)"
+                [nzShowUploadList]="false">
+                @if (!thumbnailDTO.imageB64) {
+                <nz-icon class="upload-icon" nzType="plus" />
+                <div class="ant-upload-text">Enviar</div>
+                } @else {
+                <img [src]="thumbnailDTO.imageB64" />
+                }
+              </nz-upload>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div class="rigth-block">
+        <div class="form-row-1">
+          <nz-form-item>
+            <nz-form-label nzFor="seriesName"> Nome </nz-form-label>
+            <nz-form-control nzErrorTip="Nome da série é obrigatório!">
+              <input nz-input formControlName="seriesName" id="seriesName" required maxlength="78">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-row-2">
+          <nz-form-item>
+            <nz-form-label nzFor="directors"> Diretor(a) </nz-form-label>
+            <nz-select formControlName="directors" id="directors" required>
+              @for (director of directors; track director.id) {
+              <nz-option [nzLabel]="director.txActorName + ' ' + director.txActorSurname"
+                [nzValue]="director.id"></nz-option>
+              }
+            </nz-select>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="classification"> Classificação Indicativa </nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="classification" id="classification">
+                <nz-option nzLabel="Livre" [nzValue]="0"></nz-option>
+                <nz-option nzLabel="10 anos" [nzValue]="10"></nz-option>
+                <nz-option nzLabel="12 anos" [nzValue]="12"></nz-option>
+                <nz-option nzLabel="14 anos" [nzValue]="14"></nz-option>
+                <nz-option nzLabel="16 anos" [nzValue]="16"></nz-option>
+                <nz-option nzLabel="18 anos" [nzValue]="18"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-row-3">
+          <nz-form-item>
+            <nz-form-label nzFor="dtLaunch"> Data de Lançamento </nz-form-label>
+            <nz-date-picker formControlName="dtLaunch" id="dtLaunch" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder=""></nz-date-picker>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="dtClosure"> Data de Encerramento </nz-form-label>
+            <nz-date-picker formControlName="dtClosure" id="dtClosure" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder=""></nz-date-picker>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <label nz-checkbox formControlName="status">Ativado</label>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-row-4">
+          <nz-form-item>
+            <nz-form-label nzFor="description"> Descrição </nz-form-label>
+            <nz-form-control>
+              <textarea nz-input formControlName="description" id="description"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-row-5">
+          <nz-form-item>
+            <nz-form-label nzFor="resume"> Sinopse </nz-form-label>
+            <nz-form-control>
+              <textarea nz-input formControlName="resume" id="resume"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </nz-tab>
+</nz-tabset>

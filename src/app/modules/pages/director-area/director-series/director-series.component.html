@@ -1,0 +1,58 @@
+<main>
+  <div class="tab">
+    <div class="filter">
+      <div class="filters">
+        <form [formGroup]="filterForm">
+          <nz-select formControlName="filterOption">
+            <nz-option nzValue="codigo" nzLabel="Código" nz></nz-option>
+            <nz-option nzValue="nome" nzLabel="Nome"></nz-option>
+          </nz-select>
+          <nz-input-group nzSearch [nzAddOnAfter]="iconSearch">
+            <input type="text" nz-input placeholder="Descrição da Pesquisa" formControlName="description">
+          </nz-input-group>
+          <ng-template #iconSearch>
+            <button nz-button nzType="primary" nzSearch (click)="searchSeries()"><nz-icon nzType="search" /></button>
+          </ng-template>
+          <div class="filters-director-select">
+            <nz-select [nzMaxTagCount]="1" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+              nzPlaceHolder="Nenhum diretor selecionado" formControlName="selectedDirectors">
+
+              @for (director of directors; track director.id) {
+              <nz-option [nzLabel]="director.txActorName + ' ' + director.txActorSurname"
+                [nzValue]="director"></nz-option>
+              }
+            </nz-select>
+            <ng-template #tagPlaceHolder let-selectedList>
+              e + {{ selectedQuantity() }} selecionado(s)
+            </ng-template>
+          </div>
+        </form>
+      </div>
+      <div class="btns">
+        <button (click)="showModal('Cadastrar', 0)">Novo</button>
+      </div>
+    </div>
+    <nz-table #seriesTable [nzData]="series" [nzPageSize]="6" [nzShowPagination]="true" [nzFrontPagination]="true" >
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Episódios</th>
+          <th>Lançamento</th>
+          <th>Diretor(a)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (serie of seriesTable.data; track serie.id) {
+        <tr (click)="serie.id ? showModal('Atualizar', serie.id) : null">
+          <td>{{ serie.id }}</td>
+          <td>{{ serie.txSeriesName }}</td>
+          <td>{{ serie.nuEpisode }}</td>
+          <td>{{ serie.dtLaunch | date:"dd/MM/yyyy" }}</td>
+          <td>{{ serie.director.txActorName + ' ' + serie.director.txActorSurname }}</td>
+        </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</main>

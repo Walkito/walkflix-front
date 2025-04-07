@@ -1,0 +1,33 @@
+<main>
+  @if (!episodes || episodes.length === 0) {
+  <div class="not-found-div">
+    <p class="not-found">Nenhum episódio encontrado para esta série</p>
+  </div>
+  } @else {
+  <div class="row-one">
+    <div class="pagination-row">
+      <nz-pagination [nzTotal]="episodes.length" nzSimple [nzPageIndex]="pageIndex" [nzPageSize]="pageSize"
+        (nzPageIndexChange)="onPageChange($event)">
+      </nz-pagination>
+    </div>
+    <button>Novo Episódio</button>
+  </div>
+  <div class="row-two">
+    <nz-list>
+      @for(episode of pagedEpisodes; track episode.id; let i = $index){
+      <div class="row">
+        <nz-list-item [class.last-item]="i === pagedEpisodes.length - 1">
+          <div class="item-row">
+            <p>{{ episode.nuEpisode}}</p>
+            <p>{{episode.txEpisodeName}}</p>
+            <p>{{episode.nuDuration}} min</p>
+            <p>{{episode.dtRelease | date:"dd/MM/yyyy"}}</p>
+          </div>
+        </nz-list-item>
+        <nz-icon nzType="close-circle"></nz-icon>
+      </div>
+      }
+    </nz-list>
+  </div>
+  }
+</main>

@@ -1,6 +1,6 @@
 <main>
   <div class="logo-div">
-    <img src="images/logo.png" alt="Logo da Walkflix">
+    <img [routerLink]="['/']" src="images/logo.png" alt="Logo da Walkflix">
   </div>
   <div class="go-back">
     <a [routerLink]="['/']" routerLinkActive="router-link-active"> <nz-icon nzType="arrow-left"></nz-icon>Voltar à Walkflix</a>
@@ -13,6 +13,9 @@
           <nz-icon [nzType]="tab.icon" />
           {{ tab.name }}
         </ng-template>
+        @if (tab.name === "Séries") {
+          <app-director-series></app-director-series>
+        }
       </nz-tab>
       }
     </nz-tabset>

@@ -2,6 +2,8 @@
   --black-color: #12100D;
   --gray-color: rgba(0, 0, 0, 0.7);
   --gray-hover: #E2E2E2;
+  --ligth-blue-color: #1890ff;
+  --ligth-blue-color-border: #40a9ff;
   --font: "Netflix Sans";
 }
 
@@ -29,4 +31,16 @@ body {
   height: 100%;
 }
 
+.error-notification{
+  background: rgb(255, 113, 113) !important;
+  color: white;
+}
 
+.sucess-notification{
+  background: rgb(102, 231, 123) !important;
+  color: white;
+}
+
+.ant-notification-notice-message{
+  color: white;
+}
