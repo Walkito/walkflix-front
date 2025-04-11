@@ -8,5 +8,5 @@ export interface Episode{
   txEpisodePicture: string;
   dtRelease: Date;
   nuDuration: number;
-  series: Serie;
+  idSeries: number
 }

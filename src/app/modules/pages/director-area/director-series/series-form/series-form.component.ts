@@ -21,6 +21,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NotificationService } from 'app/shared/services/notification.service';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DirectorEpisodeComponent } from '../director-episode/director-episode.component';
+import { ActorService } from 'app/shared/services/actor.service';
 
 @Component({
   selector: 'app-series-form',
@@ -33,13 +34,15 @@ import { DirectorEpisodeComponent } from '../director-episode/director-episode.c
 export class SeriesFormComponent implements OnInit, OnDestroy {
   @Output() closeModal = new EventEmitter<void>()
   @Output() searchSeries = new EventEmitter<void>()
-  @Output() hideUpdateButton = new EventEmitter<void>();
+  @Output() showUpdateButton = new EventEmitter<boolean>();
 
   #utils = inject(Utils);
-  #service = inject(SeriesService);
+  #seriesService = inject(SeriesService);
+  #actorService = inject(ActorService);
   #destroy$ = new Subject<void>();
   #notificationService = inject(NotificationService);
 
+  selectedTab: number = 0;
   create: boolean = false;
   idSerie: number = 0;
   directors: Actor[] = [];
@@ -84,7 +87,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.create) {
       let serie: Serie = {} as Serie;
-      this.#service.getSeriesWithFilter(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
+      this.#seriesService.getSeriesWithFilter(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
           serie = response.obj[0];
 
@@ -107,6 +110,11 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               reader.onloadend = () => {
                 this.posterDTO.imageB64 = reader.result as string;
               };
+            },
+            error: error => {
+              if (error.status !== 400) {
+                console.log(error);
+              }
             }
           }
           );
@@ -117,8 +125,13 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               reader.readAsDataURL(blob);
 
               reader.onloadend = () => {
-                this.posterDTO.imageB64 = reader.result as string;
+                this.bannerDTO.imageB64 = reader.result as string;
               };
+            },
+            error: error => {
+              if (error.status !== 400) {
+                console.log(error);
+              }
             }
           }
           );
@@ -129,8 +142,13 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               reader.readAsDataURL(blob);
 
               reader.onloadend = () => {
-                this.posterDTO.imageB64 = reader.result as string;
+                this.thumbnailDTO.imageB64 = reader.result as string;
               };
+            },
+            error: error => {
+              if (error.status !== 400) {
+                console.log(error);
+              }
             }
           }
           );
@@ -145,8 +163,17 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
     this.#destroy$.complete();
   }
 
+  tabChange(index: number) {
+    this.selectedTab = index;
+
+    if (index === 1) {
+      this.showUpdateButton.emit(false);
+    } else {
+      this.showUpdateButton.emit(true);
+    }
+  }
+
   handleChange(file: NzUploadChangeParam, type: number) {
-    this.hideUpdateButton.emit();
     this.changeURLs(file, type);
   }
 
@@ -177,98 +204,116 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
   }
 
   createSeries() {
-    const payload: Serie = this.buildPayload();
+    if (this.validateForms()) {
+      const payload: Serie = this.buildPayload();
 
-    this.#service.createSeries(payload).subscribe({
-      next: (response: ApiResponse) => {
-        this.idSerie = response.obj.id;
+      this.#seriesService.createSeries(payload).subscribe({
+        next: (response: ApiResponse) => {
+          this.idSerie = response.obj.id;
 
-        if (this.posterDTO.fileName) {
-          this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-            error: (error) => {
-              console.log(error);
-              this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
-              this.imageError = true;
-            }
-          });
-        }
-        if (this.bannerDTO.fileName) {
-          this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-            error: (error) => {
-              console.log(error);
-              this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
-              this.imageError = true;
-            }
-          });
-        }
-        if (this.thumbnailDTO.fileName) {
-          this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-            error: (error) => {
-              console.log(error);
-              this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
-              this.imageError = true;
-            }
-          });
-        }
+          if (this.posterDTO.fileName) {
+            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                this.imageError = true;
+              }
+            });
+          }
+          if (this.bannerDTO.fileName) {
+            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                this.imageError = true;
+              }
+            });
+          }
+          if (this.thumbnailDTO.fileName) {
+            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                this.imageError = true;
+              }
+            });
+          }
 
-        this.closeModal.emit();
-        this.searchSeries.emit();
+          this.closeModal.emit();
+          this.searchSeries.emit();
 
-        this.#notificationService.createNotification('Sucesso', 'Série criada com sucesso!', 0)
-        if(this.imageError){
-          this.#notificationService.createNotification('Imagem(s) não enviada', 'Erro ao enviar a(s) imagem(s). Por favor, tente novamente na tela de edição. ', 1);
+          this.#notificationService.createNotification('Sucesso', 'Série criada com sucesso!', 0)
+          if (this.imageError) {
+            this.#notificationService.createNotification('Imagem(s) não enviada', 'Erro ao enviar a(s) imagem(s). Por favor, tente novamente na tela de edição. ', 1);
+          }
+        },
+        error: (error) => {
+          console.log(error);
+          this.#notificationService.createNotification('Série não criada', error.error.obj, 1);
         }
-      },
-      error: (error) => {
-        console.log(error);
-        this.#notificationService.createNotification('Série não criada', error.error.obj, 1);
-      }
-    });
+      });
+    }
   }
 
   editSeries() {
-    const payload: Serie = this.buildPayload();
+    if (this.validateForms()) {
+      const payload: Serie = this.buildPayload();
 
-    if (this.posterDTO.fileName) {
-      this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-        error: (error) => {
-          console.log(error);
-          this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-        }
-      });
-      return;
-    }
-    if (this.bannerDTO.fileName) {
-      this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-        error: (error) => {
-          console.log(error);
-          this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-        }
-      });
-      return;
-    }
-    if (this.thumbnailDTO.fileName) {
-      this.#service.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-        error: (error) => {
-          console.log(error);
-          this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-        }
-      });
-      return;
-    }
-
-    this.#service.editSeries(this.idSerie, payload).pipe(takeUntil(this.#destroy$)).subscribe({
-      next: () => {
-        this.closeModal.emit();
-        this.searchSeries.emit();
-
-        this.#notificationService.createNotification('Sucesso', 'Série editada com sucesso!', 0)
-      },
-      error: (error) => {
-        console.log(error);
-        this.#notificationService.createNotification('Série não editada', error.error.obj, 1);
+      if (this.posterDTO.fileName) {
+        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+          error: (error) => {
+            console.log(error);
+            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+          }
+        });
+        return;
       }
-    });
+      if (this.bannerDTO.fileName) {
+        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+          error: (error) => {
+            console.log(error);
+            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+          }
+        });
+        return;
+      }
+      if (this.thumbnailDTO.fileName) {
+        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+          error: (error) => {
+            console.log(error);
+            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+          }
+        });
+        return;
+      }
+
+      this.#seriesService.editSeries(this.idSerie, payload).pipe(takeUntil(this.#destroy$)).subscribe({
+        next: () => {
+          this.closeModal.emit();
+          this.searchSeries.emit();
+
+          this.#notificationService.createNotification('Sucesso', 'Série editada com sucesso!', 0)
+        },
+        error: (error) => {
+          console.log(error);
+          this.#notificationService.createNotification('Série não editada', error.error.obj, 1);
+        }
+      });
+    }
+  }
+
+  private validateForms(): boolean {
+    if (!this.serieForms.valid) {
+      Object.entries(this.serieForms.controls).forEach(([key, control]) => {
+        if (control.invalid) {
+          this.#notificationService.createNotification("Formulário Incompleto", "Existem campos inválidos no formulário.", 1);
+        }
+      });
+
+      return false;
+    } else {
+      return true;
+    }
   }
 
   private buildPayload(): Serie {
@@ -277,8 +322,8 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
 
     const payload: Serie = {
       id: 0,
+      director: director,
       txSeriesName: this.serieForms.get('seriesName')?.value,
-      director,
       nuEpisode: 0,
       dtLaunch: this.#utils.formatDateDb(this.serieForms.get('dtLaunch')?.value),
       dtClosure: this.#utils.formatDateDb(this.serieForms.get('dtClosure')?.value),

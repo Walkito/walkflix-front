@@ -4,8 +4,8 @@ import { Episode } from "./episode";
 
 export interface Serie {
   id: number;
-  txSeriesName: string;
   director: Actor;
+  txSeriesName: string;
   nuEpisode: number;
   dtLaunch: string;
   dtClosure: string;
@@ -16,8 +16,4 @@ export interface Serie {
   txPictureBanner: string;
   txPicturePoster: string;
   txPictureThumbnail: string;
-  actorsFirstSeries?: Actor[];
-  episodes?: Episode[];
-  actors?: Actor[];
-  characters?: Character[] ;
 }

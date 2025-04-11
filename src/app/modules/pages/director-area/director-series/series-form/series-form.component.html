@@ -1,7 +1,4 @@
-<nz-tabset>
-  <nz-tab nzTitle="Episódios" [nzDisabled]="create">
-    <app-director-episode [serieId]="idSerie"></app-director-episode>
-  </nz-tab>
+<nz-tabset [(nzSelectedIndex)]="selectedTab" (nzSelectedIndexChange)="tabChange($event)">
   <nz-tab nzTitle="Série">
     <div class="title-row">
       <h1>{{title}}</h1>
@@ -60,7 +57,7 @@
       <div class="rigth-block">
         <div class="form-row-1">
           <nz-form-item>
-            <nz-form-label nzFor="seriesName"> Nome </nz-form-label>
+            <nz-form-label nzFor="seriesName" nzRequired> Nome </nz-form-label>
             <nz-form-control nzErrorTip="Nome da série é obrigatório!">
               <input nz-input formControlName="seriesName" id="seriesName" required maxlength="78">
             </nz-form-control>
@@ -68,7 +65,7 @@
         </div>
         <div class="form-row-2">
           <nz-form-item>
-            <nz-form-label nzFor="directors"> Diretor(a) </nz-form-label>
+            <nz-form-label nzFor="directors" nzRequired> Diretor(a) </nz-form-label>
             <nz-select formControlName="directors" id="directors" required>
               @for (director of directors; track director.id) {
               <nz-option [nzLabel]="director.txActorName + ' ' + director.txActorSurname"
@@ -125,5 +122,8 @@
         </div>
       </div>
     </form>
+  </nz-tab>
+  <nz-tab nzTitle="Episódios" [nzDisabled]="create">
+    <app-director-episode [serieId]="idSerie"></app-director-episode>
   </nz-tab>
 </nz-tabset>

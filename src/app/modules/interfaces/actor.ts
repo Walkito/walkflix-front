@@ -10,8 +10,4 @@ export interface Actor{
   txCity: string;
   txProfilePicture: string;
   txBiography: string;
-  firstSeries: Serie;
-  series: Serie[];
-  characters: Character[];
-  directedSeries: Serie[];
 }

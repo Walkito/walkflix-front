@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import { Serie } from 'app/modules/interfaces/serie';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -13,10 +13,8 @@ import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { Utils } from 'app/shared/utils/utils.service';
 import { DatePipe } from '@angular/common';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
-import { HomeComponent } from '../../home/home.component';
 import { SeriesFormComponent } from './series-form/series-form.component';
-import { title } from 'node:process';
-import { NotificationService } from 'app/shared/services/notification.service';
+import { ActorService } from 'app/shared/services/actor.service';
 
 @Component({
   selector: 'app-director-series',
@@ -26,15 +24,15 @@ import { NotificationService } from 'app/shared/services/notification.service';
   providers: [DatePipe, Utils, NzModalService]
 })
 export class DirectorSeriesComponent implements OnInit, OnDestroy {
-  #notificationService = inject(NotificationService);
-  #service = inject(SeriesService);
+  #seriesService = inject(SeriesService);
+  #actorService = inject(ActorService);
   #modal = inject(NzModalService);
   #destroy$ = new Subject<void>();
   #descriptionValue: string = '';
   #filterOptionValue: string = 'codigo';
   #subscriptions: Subscription[] = [];
   #loadingButtonModal: boolean = false;
-
+  #showUpdateButton: boolean = true;
   selectedQuantity = signal(0);
 
   series: Serie[] = [];
@@ -46,9 +44,9 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.showModal('Atualizar', 1);
     this.getAllSeries();
     this.formRoutines();
+    this.findAllDirectors();
   }
 
   ngOnDestroy(): void {
@@ -57,15 +55,10 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   }
 
   getAllSeries(): void {
-    this.#service.getAllSerieS().pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#seriesService.getAllSerieS().pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: any) => {
+        console.log(response);
         this.series = response.obj;
-
-        this.series.forEach((serie) => {
-          if (!this.directors.some(s => s.id === serie.director.id)) {
-            this.directors.push(serie.director);
-          }
-        });
       },
       error: (error) => {
         console.log(error);
@@ -105,6 +98,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
+                this.unsubscribeAll();
               }
             },
             {
@@ -114,8 +108,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               onClick: () => {
                 const instance = modalRef.getContentComponent() as SeriesFormComponent
 
-                this.#subscriptions.forEach(sub => sub.unsubscribe());
-                this.#subscriptions = [];
+                this.unsubscribeAll();
 
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
                 this.#subscriptions.push(instance.searchSeries.subscribe(() => {
@@ -154,22 +147,21 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
+                this.unsubscribeAll();
+
+                this.#showUpdateButton = true;
               }
             },
             {
               label: 'Atualizar',
               type: 'primary',
               loading: () => !!this.#loadingButtonModal,
+              show: () => !!this.#showUpdateButton,
               onClick: () => {
                 const instance = modalRef.getContentComponent() as SeriesFormComponent
 
-                this.#subscriptions.forEach(sub => sub.unsubscribe());
-                this.#subscriptions = [];
+                this.unsubscribeAll()
 
-                this.#subscriptions.push(instance.hideUpdateButton.subscribe(() => {
-                  console.log('Entrou');
-                  modalRef.updateConfig({ nzFooter: null});
-                }));
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
                 this.#subscriptions.push(instance.searchSeries.subscribe(() => this.getAllSeries()));
 
@@ -179,13 +171,34 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
           ],
           nzClosable: false
         });
+
+        const instance = modalRef.getContentComponent() as SeriesFormComponent;
+        this.#subscriptions.push(instance.showUpdateButton.subscribe((valor) => this.#showUpdateButton = valor ));
         break;
       }
     }
   }
 
+  private unsubscribeAll() {
+    this.#subscriptions.forEach(sub => sub.unsubscribe());
+    this.#subscriptions = [];
+  }
+
+  private findAllDirectors(): void {
+    this.#actorService.findAllDirectors().pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.directors = response.obj;
+      },
+      error: (error) => {
+        if (error.status == 404){
+          this.directors = [];
+        }
+      }
+    });
+  }
+
   private getSeriesWithFilter(id: number, seriesName: string, directors: Actor[]): void {
-    this.#service.getSeriesWithFilter(id, seriesName, directors, 0).pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#seriesService.getSeriesWithFilter(id, seriesName, directors, 0).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj;
       },
@@ -211,6 +224,5 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
     this.filterForm.get('filterOption')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: string) => {
       this.#filterOptionValue = value;
     });
-
   }
 }

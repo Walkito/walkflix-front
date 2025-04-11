@@ -1,0 +1,62 @@
+<main>
+  <div class="title-row">
+    <h1>{{title}}</h1>
+  </div>
+  <form nzForm [formGroup]="episodeForm">
+    <div class="left-block">
+      <div class="row-one">
+        <nz-form-item>
+          <nz-form-label nzFor="txEpisodeName" nzNoColon="true" nzRequired>Nome do Episódio</nz-form-label>
+          <nz-form-control nzErrorTip="Nome do episódio é obrigatório!">
+            <input nz-input formControlName="txEpisodeName" required maxlength="70">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div class="row-two">
+        <nz-form-item>
+          <nz-form-label nzFor="dtRelease" nzNoColon="true">Dt. Lançamento</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker formControlName="dtRelease" id="dtRelease" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder=""></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzFor="nuDuration" nzNoColon="true">Duração</nz-form-label>
+          <nz-form-control>
+            <nz-input-number formControlName="nuDuration" nzMin="1" nzMax="999" id="nuDuration">
+              <span nzInputSuffix>min</span>
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div class="row-three">
+        <nz-form-item>
+          <nz-form-label nzFor="txResume" nzNoColon="true">Resumo</nz-form-label>
+          <nz-form-control>
+            <textarea nz-input formControlName="txResume" id="txResume"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div class="rigth-block">
+      <div class="img-block">
+        <nz-form-item>
+          <nz-form-label nzFor="picture" nzNoColon="true"> Miniatura </nz-form-label>
+          <nz-form-control>
+            <div class="image-border">
+              <nz-upload [nzDisabled]="false" class="image-upload" [nzShowUploadList]="false">
+                @if(!thumbnailDTO.imageB64){
+                  <nz-icon class="upload-icon" nzType="plus" />
+                  <div class="ant-upload-text">Enviar</div>
+                }@else{
+                  <img [src]="thumbnailDTO.imageB64"/>
+                }
+              </nz-upload>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+  </form>
+</main>

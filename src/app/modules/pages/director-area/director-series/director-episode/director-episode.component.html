@@ -1,5 +1,8 @@
 <main>
   @if (!episodes || episodes.length === 0) {
+  <div class="row-one">
+    <button (click)="showModal('Cadastrar', 0)">Novo Episódio</button>
+  </div>
   <div class="not-found-div">
     <p class="not-found">Nenhum episódio encontrado para esta série</p>
   </div>
@@ -10,7 +13,7 @@
         (nzPageIndexChange)="onPageChange($event)">
       </nz-pagination>
     </div>
-    <button>Novo Episódio</button>
+    <button (click)="showModal('Cadastrar', 0)">Novo Episódio</button>
   </div>
   <div class="row-two">
     <nz-list>
