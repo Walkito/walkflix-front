@@ -38,7 +38,7 @@ export class DirectorEpisodeComponent implements AfterViewInit {
 
   showModal(option: string, id: number) {
     switch (option) {
-      case 'Cadastrar':
+      case 'Cadastrar': {
         const modalRef = this.#modal.create({
           nzContent: EpisodeFormComponent,
           nzWidth: '52vw',
@@ -47,7 +47,7 @@ export class DirectorEpisodeComponent implements AfterViewInit {
           nzData: {
             title: 'Cadastrar Episódio',
             create: true,
-            id: this.serieId
+            idSerie: this.serieId
           },
           nzFooter: [
             {
@@ -67,7 +67,14 @@ export class DirectorEpisodeComponent implements AfterViewInit {
                 this.unsubscribeAll();
 
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
-                this.#subscriptions.push(instance.searchEpisodes.subscribe(() => this.searchEpisodes()));
+                this.#subscriptions.push(instance.searchEpisodes.subscribe(() => {
+                  this.searchEpisodes()
+
+                  if (instance.imageError) {
+                    this.showModal('Atualizar', instance.idEpisode);
+                  }
+                }
+                ));
 
                 instance.createEpisode();
               }
@@ -76,6 +83,47 @@ export class DirectorEpisodeComponent implements AfterViewInit {
           nzClosable: false
         });
         break;
+      }
+      case 'Atualizar': {
+        const modalRef = this.#modal.create({
+          nzContent: EpisodeFormComponent,
+          nzWidth: '52vw',
+          nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
+          nzStyle: { top: '10px', width: '1200px' },
+          nzData: {
+            title: 'Editar Episódio',
+            create: false,
+            idSerie: this.serieId,
+            idEpisode: id
+          },
+          nzFooter: [
+            {
+              label: 'Voltar',
+              type: 'default',
+              onClick: () => {
+                modalRef.close();
+                this.unsubscribeAll();
+              }
+            },
+            {
+              label: 'Atualizar',
+              type: 'primary',
+              onClick: () => {
+                const instance = modalRef.getContentComponent() as EpisodeFormComponent
+
+                this.unsubscribeAll();
+
+                this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+                this.#subscriptions.push(instance.searchEpisodes.subscribe(() => this.searchEpisodes()));
+
+                instance.editEpisode();
+              }
+            },
+          ],
+          nzClosable: false
+        });
+        break;
+      }
     }
   }
 

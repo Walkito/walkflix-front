@@ -40,11 +40,11 @@
     </div>
     <div class="rigth-block">
       <div class="img-block">
+        <nz-form-label nzFor="picture" nzNoColon="true"> Miniatura </nz-form-label>
         <nz-form-item>
-          <nz-form-label nzFor="picture" nzNoColon="true"> Miniatura </nz-form-label>
           <nz-form-control>
             <div class="image-border">
-              <nz-upload [nzDisabled]="false" class="image-upload" [nzShowUploadList]="false">
+              <nz-upload [nzDisabled]="false" class="image-upload" [nzShowUploadList]="false" (nzChange)="handleChange($event)">
                 @if(!thumbnailDTO.imageB64){
                   <nz-icon class="upload-icon" nzType="plus" />
                   <div class="ant-upload-text">Enviar</div>

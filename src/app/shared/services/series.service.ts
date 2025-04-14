@@ -43,7 +43,7 @@ export class SeriesService {
     return this.#http.put<ApiResponse>(`${this.apiPath}`, serie, { params });
   }
 
-  uploadActorPicture(path:string, id:number, option: string, image : ImageDTO) : Observable<ApiResponse>{
+  uploadSeriesPicture(path:string, id:number, option: string, image : ImageDTO) : Observable<ApiResponse>{
     const params : HttpParams = new HttpParams().set('path', path).set('id', id).set('option', option);
 
     return this.#http.post<ApiResponse>(`${this.apiPath}/upload`, image, { params });

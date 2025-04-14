@@ -19,7 +19,7 @@
     <nz-list>
       @for(episode of pagedEpisodes; track episode.id; let i = $index){
       <div class="row">
-        <nz-list-item [class.last-item]="i === pagedEpisodes.length - 1">
+        <nz-list-item [class.last-item]="i === pagedEpisodes.length - 1" (click)="showModal('Atualizar', episode.id)">
           <div class="item-row">
             <p>{{ episode.nuEpisode}}</p>
             <p>{{episode.txEpisodeName}}</p>

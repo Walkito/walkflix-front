@@ -112,7 +112,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               };
             },
             error: error => {
-              if (error.status !== 400) {
+              if (error.status !== 404) {
                 console.log(error);
               }
             }
@@ -129,7 +129,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               };
             },
             error: error => {
-              if (error.status !== 400) {
+              if (error.status !== 404) {
                 console.log(error);
               }
             }
@@ -146,7 +146,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
               };
             },
             error: error => {
-              if (error.status !== 400) {
+              if (error.status !== 404) {
                 console.log(error);
               }
             }
@@ -180,21 +180,21 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
   changeURLs(info: { file: NzUploadFile }, type: number): void {
     switch (type) {
       case 0: {
-        this.getBase64(info.file!.originFileObj!, (img: string) => {
+        this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
           this.posterDTO.imageB64 = img;
         });
         this.posterDTO.fileName = info.file.name;
         break;
       }
       case 1: {
-        this.getBase64(info.file!.originFileObj!, (img: string) => {
+        this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
           this.bannerDTO.imageB64 = img;
         });
         this.bannerDTO.fileName = info.file.name;
         break;
       }
       case 2: {
-        this.getBase64(info.file!.originFileObj!, (img: string) => {
+        this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
           this.thumbnailDTO.imageB64 = img;
         });
         this.thumbnailDTO.fileName = info.file.name;
@@ -212,7 +212,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
           this.idSerie = response.obj.id;
 
           if (this.posterDTO.fileName) {
-            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -221,7 +221,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
             });
           }
           if (this.bannerDTO.fileName) {
-            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -230,7 +230,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
             });
           }
           if (this.thumbnailDTO.fileName) {
-            this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -260,7 +260,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
       const payload: Serie = this.buildPayload();
 
       if (this.posterDTO.fileName) {
-        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
@@ -269,7 +269,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
         return;
       }
       if (this.bannerDTO.fileName) {
-        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
@@ -278,7 +278,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
         return;
       }
       if (this.thumbnailDTO.fileName) {
-        this.#seriesService.uploadActorPicture('series/posters/', this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
@@ -337,11 +337,5 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
     };
 
     return payload;
-  }
-
-  private getBase64(img: File, callback: (img: string) => void): void {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result!.toString()));
-    reader.readAsDataURL(img);
   }
 }

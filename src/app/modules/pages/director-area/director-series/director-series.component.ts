@@ -57,7 +57,6 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   getAllSeries(): void {
     this.#seriesService.getAllSerieS().pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: any) => {
-        console.log(response);
         this.series = response.obj;
       },
       error: (error) => {

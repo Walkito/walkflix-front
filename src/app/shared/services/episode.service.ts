@@ -14,18 +14,30 @@ export class EpisodeService {
 
   #http = inject(HttpClient);
 
-  getAllEpisodes(idSeries: number): Observable<ApiResponse>{
-    const params : HttpParams = new HttpParams().set('idSeries', idSeries);
+  getEpisode(id: number): Observable<ApiResponse> {
+    const params: HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.get<ApiResponse>(`${this.apiPath}`, { params });
+  }
+
+  getAllEpisodes(idSeries: number): Observable<ApiResponse> {
+    const params: HttpParams = new HttpParams().set('idSeries', idSeries);
 
     return this.#http.get<ApiResponse>(`${this.apiPath}/series`, { params });
   }
 
-  createEpisode(payload: Episode): Observable<ApiResponse>{
+  createEpisode(payload: Episode): Observable<ApiResponse> {
     return this.#http.post<ApiResponse>(`${this.apiPath}`, payload);
   }
 
-  uploadActorPicture(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse>{
-    const params : HttpParams = new HttpParams().set('path', path).set('id', id);
+  editEpisode(id: number, payload: Episode): Observable<ApiResponse> {
+    const params : HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.put<ApiResponse>(`${this.apiPath}`, payload, { params });
+  }
+
+  uploadEpisodePicture(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse> {
+    const params: HttpParams = new HttpParams().set('path', path).set('id', id);
 
     return this.#http.post<ApiResponse>(`${this.apiPath}/upload`, imageDTO, { params });
   }
