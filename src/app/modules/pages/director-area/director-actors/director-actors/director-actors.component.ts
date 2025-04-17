@@ -1,0 +1,181 @@
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Serie } from 'app/modules/interfaces/serie';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzOptionComponent, NzSelectModule } from 'ng-zorro-antd/select';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Actor } from 'app/modules/interfaces/actor';
+import { SeriesService } from 'app/shared/services/series.service';
+import { ApiResponse } from 'app/modules/interfaces/api-response';
+import { Subject, Subscription, take, takeUntil } from 'rxjs';
+import { Utils } from 'app/shared/utils/utils.service';
+import { DatePipe } from '@angular/common';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { ActorService } from 'app/shared/services/actor.service';
+import { NotificationService } from 'app/shared/services/notification.service';
+import { ActorFormComponent } from './actor-form/actor-form.component';
+
+@Component({
+  selector: 'app-director-actors',
+  imports: [NzTableModule, NzSelectModule, NzButtonModule, NzIconModule, NzInputModule, FormsModule, ReactiveFormsModule, NzModalModule, DatePipe],
+  templateUrl: './director-actors.component.html',
+  styleUrl: './director-actors.component.scss'
+})
+export class DirectorActorsComponent implements OnInit {
+  #actorService = inject(ActorService);
+  #destroy$ = new Subject<void>();
+  #modal = inject(NzModalService);
+  #descriptionValue: string = '';
+  #filterOptionValue: string = 'codigo';
+  #subscriptions: Subscription[] = [];
+
+  actors: Actor[] = [];
+  series: Serie[] = [];
+  selectedQuantity = signal(0);
+
+  filterForm: FormGroup = new FormGroup({
+    filterOption: new FormControl<string>('codigo'),
+    description: new FormControl<string>(''),
+    selectedSeries: new FormControl<Serie[]>([])
+  });
+
+  ngOnInit(): void {
+    this.showModal('Cadastrar', 0);
+    this.searchActors();
+    this.formRoutines();
+  }
+
+  showModal(option: string, id: number) {
+    switch (option) {
+      case 'Cadastrar': {
+        const modalRef = this.#modal.create({
+          nzContent: ActorFormComponent,
+          nzWidth: '72vw',
+          nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
+          nzStyle: { top: '10px', width: '1200px' },
+          nzData: {
+            title: 'Cadastrar Ator / Atriz'
+          },
+          nzFooter: [
+            {
+              label: 'Voltar',
+              type: 'default',
+              onClick: () => {
+                modalRef.close();
+              }
+            },
+            {
+              label: 'Cadastrar',
+              type: 'primary',
+              onClick: () => {
+                const instance = modalRef.getContentComponent() as ActorFormComponent
+
+                this.unsubscribeAll();
+
+                this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+                this.#subscriptions.push(instance.searchActors.subscribe(() => {
+                  this.searchActors();
+
+                  const actorId = instance.idActor;
+
+                  if (instance.imageError) {
+                    this.showModal('Atualizar', actorId);
+                  }
+                }));
+
+                instance.createActor();
+              }
+            }
+          ]
+        });
+        break;
+      }
+      case 'Atualizar': {
+        const modalRef = this.#modal.create({
+          nzContent: ActorFormComponent,
+          nzWidth: '72vw',
+          nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
+          nzStyle: { top: '10px', width: '1200px' },
+          nzData: {
+
+          },
+          nzFooter: [
+            {
+              label: 'Voltar',
+              type: 'default',
+              onClick: () => {
+                modalRef.close();
+              }
+            },
+            {
+              label: 'Excluir',
+              type: 'primary',
+              danger: true,
+              onClick: () => {
+                modalRef.close();
+              }
+            },
+            {
+              label: 'Cadastrar',
+              type: 'primary',
+              onClick: () => {
+                modalRef.close();
+              }
+            }
+          ]
+        });
+        break;
+      }
+    }
+  }
+
+  searchActors() {
+    switch (this.#filterOptionValue) {
+      case 'codigo': {
+        this.findActorsWithFilter(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedSeries')?.value);
+        break;
+      }
+      case 'nome': {
+        this.findActorsWithFilter(0, this.#descriptionValue, this.filterForm.get('selectedSeries')?.value);
+        break;
+      }
+    }
+  }
+
+  private unsubscribeAll() {
+    this.#subscriptions.forEach(sub => sub.unsubscribe());
+    this.#subscriptions = [];
+  }
+
+  private findActorsWithFilter(id: number, txActorName: string, series: Serie[]) {
+    this.#actorService.findActorsWithFilter(id, txActorName, series).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.actors = response.obj;
+        this.actors.forEach((actor, index) => {
+          this.actors[index].status = actor.status.charAt(0) + actor.status.slice(1).toLowerCase();
+        });
+      },
+      error: (error) => {
+        if (error.status !== 404) {
+          console.log(error);
+        }
+      }
+    })
+  }
+
+  private formRoutines(): void {
+    this.filterForm.get('selectedSeries')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: Serie[]) => {
+      this.selectedQuantity.set(value.length - 1);
+    });
+
+    this.filterForm.get('description')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: string) => {
+      this.#descriptionValue = value;
+    });
+
+    this.filterForm.get('filterOption')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: string) => {
+      this.#filterOptionValue = value;
+    });
+  }
+}

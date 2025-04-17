@@ -9,10 +9,13 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { DatePipe } from '@angular/common';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { EpisodeFormComponent } from './episode-form/episode-form/episode-form.component';
+import { EpisodeFormComponent } from './episode-form/episode-form.component';
+import { Serie } from 'app/modules/interfaces/serie';
+import { SeriesService } from 'app/shared/services/series.service';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 @Component({
   selector: 'app-director-episode',
-  imports: [NzListModule, NzIconModule, NzPaginationModule, DatePipe],
+  imports: [NzListModule, NzIconModule, NzPaginationModule, DatePipe, NzPopconfirmModule],
   templateUrl: './director-episode.component.html',
   styleUrl: './director-episode.component.scss',
   providers: [DatePipe]
@@ -22,6 +25,7 @@ export class DirectorEpisodeComponent implements AfterViewInit {
   @Input() serieId!: number;
   #destroy$ = new Subject<void>();
   #episodeService = inject(EpisodeService);
+  #seriesService = inject(SeriesService);
   #notificationService = inject(NotificationService);
   #modal = inject(NzModalService);
   #subscriptions: Subscription[] = [];
@@ -69,6 +73,8 @@ export class DirectorEpisodeComponent implements AfterViewInit {
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
                 this.#subscriptions.push(instance.searchEpisodes.subscribe(() => {
                   this.searchEpisodes()
+
+                  this.updateSeriesEpisodes(instance.series);
 
                   if (instance.imageError) {
                     this.showModal('Atualizar', instance.idEpisode);
@@ -137,6 +143,19 @@ export class DirectorEpisodeComponent implements AfterViewInit {
     return this.episodes.slice(start, start + this.pageSize);
   }
 
+  deleteEpisode(id: number){
+    this.#episodeService.deleteEpisode(id).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: () => {
+        this.#notificationService.createNotification("Sucesso", "Episódio Deletado com Sucesso!", 0);
+        this.searchEpisodes();
+      },
+      error: (error) => {
+        this.#notificationService.createNotification("Erro", "Não foi possível deletar o episódio!", 1);
+        console.log(error);
+      }
+    })
+  }
+
   onPageChange(index: number) {
     this.pageIndex = index;
   }
@@ -156,6 +175,18 @@ export class DirectorEpisodeComponent implements AfterViewInit {
           console.log('Erro do episódio: ' + error);
           this.#notificationService.createNotification("Não foi possível buscar os episódios.", error.error.obj, 1);
         }
+      }
+    });
+  }
+
+  private updateSeriesEpisodes(serie: Serie) {
+    const nuEpisode = this.episodes.length;
+
+    serie.nuEpisode = nuEpisode;
+    console.log('Entrou aki');
+    this.#seriesService.editSeries(serie.id, serie).pipe(takeUntil(this.#destroy$)).subscribe({
+      error: (error) => {
+        console.log(error);
       }
     });
   }

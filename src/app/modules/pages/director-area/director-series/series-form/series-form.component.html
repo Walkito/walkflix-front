@@ -89,14 +89,18 @@
         </div>
         <div class="form-row-3">
           <nz-form-item>
-            <nz-form-label nzFor="dtLaunch"> Data de Lançamento </nz-form-label>
-            <nz-date-picker formControlName="dtLaunch" id="dtLaunch" nzFormat="dd/MM/yyyy"
-              nzPlaceHolder=""></nz-date-picker>
+            <nz-form-label nzFor="dtLaunch" nzRequired> Data de Lançamento </nz-form-label>
+            <nz-form-control nzErrorTip="Data de Lançamento é obrigatória.">
+              <nz-date-picker formControlName="dtLaunch" id="dtLaunch" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder="" required ></nz-date-picker>
+            </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzFor="dtClosure"> Data de Encerramento </nz-form-label>
-            <nz-date-picker formControlName="dtClosure" id="dtClosure" nzFormat="dd/MM/yyyy"
-              nzPlaceHolder=""></nz-date-picker>
+            <nz-form-label nzFor="dtClosure" nzRequired> Data de Encerramento </nz-form-label>
+            <nz-form-control nzErrorTip="Data de Encerramento é obrigatória.">
+              <nz-date-picker formControlName="dtClosure" id="dtClosure" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder="" required ></nz-date-picker>
+            </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-control>

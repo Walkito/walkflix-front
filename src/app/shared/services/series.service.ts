@@ -43,6 +43,11 @@ export class SeriesService {
     return this.#http.put<ApiResponse>(`${this.apiPath}`, serie, { params });
   }
 
+  deleteSeries(id:number): Observable<ApiResponse>{
+    const params: HttpParams = new HttpParams().set('id', id);
+    return this.#http.delete<ApiResponse>(`${this.apiPath}`, { params });
+  }
+
   uploadSeriesPicture(path:string, id:number, option: string, image : ImageDTO) : Observable<ApiResponse>{
     const params : HttpParams = new HttpParams().set('path', path).set('id', id).set('option', option);
 

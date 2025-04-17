@@ -36,6 +36,12 @@ export class EpisodeService {
     return this.#http.put<ApiResponse>(`${this.apiPath}`, payload, { params });
   }
 
+  deleteEpisode(id: number): Observable<ApiResponse> {
+    const params : HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.delete<ApiResponse>(`${this.apiPath}`, { params });
+  }
+
   uploadEpisodePicture(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse> {
     const params: HttpParams = new HttpParams().set('path', path).set('id', id);
 

@@ -13,8 +13,13 @@
           <nz-icon [nzType]="tab.icon" />
           {{ tab.name }}
         </ng-template>
-        @if (tab.name === "Séries") {
-          <app-director-series></app-director-series>
+        @switch (tab.name){
+          @case ("Séries") {
+            <app-director-series></app-director-series>
+          }
+          @case ("Atores e Atrizes") {
+            <app-director-actors></app-director-actors>
+          }
         }
       </nz-tab>
       }

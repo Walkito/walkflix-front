@@ -16,6 +16,7 @@ form {
   margin: 0;
   padding: 0;
   display: flex;
+  margin-top: 3%;
 
   ::ng-deep label {
     font-weight: bold;
@@ -25,7 +26,7 @@ form {
   .left-block {
     display: flex;
     flex-direction: column;
-    width: 20%;
+    width: 30%;
     height: 100%;
     margin: 0;
 
@@ -33,10 +34,10 @@ form {
       display: flex;
       flex-direction: column;
       height: 40vh;
-      width: 12vw;
+      width: 100%;
       padding-right: 1.5vw;
 
-      ::ng-deep .ant-form-item-label{
+      ::ng-deep .ant-form-item-label {
         text-align: left;
       }
 
@@ -48,7 +49,8 @@ form {
           height: 100%;
           width: 100%;
 
-          .image-vertical-border, .image-horizontal-border {
+          .image-vertical-border,
+          .image-horizontal-border {
             display: flex;
             width: 100%;
             height: 100%;
@@ -57,14 +59,14 @@ form {
               height: 100%;
               width: 100%;
 
-              img{
+              img {
                 width: 100%;
                 border-radius: 5px;
                 overflow: hidden;
                 transition: 0.5s;
               }
 
-              img:hover{
+              img:hover {
                 transform: scale(1.1);
               }
 
@@ -81,7 +83,7 @@ form {
                 font-weight: bold;
               }
 
-              ::ng-deep .ant-upload:hover{
+              ::ng-deep .ant-upload:hover {
                 cursor: pointer;
                 border-color: var(--ligth-blue-color-border);
               }
@@ -96,100 +98,52 @@ form {
         }
       }
     }
-
-    ::ng-deep .ant-form-item:nth-child(2), .ant-form-item:nth-child(3){
-      height: 20vh;
-    }
   }
 
   .rigth-block {
     display: flex;
-    flex-direction: column;
-    width: 80%;
-
-    ::ng-deep .ant-input,
-    textarea {
-      border-radius: 5px;
-    }
+    width: 70%;
 
     .form-row-1 {
-      margin: 0;
-      padding: 0;
       display: flex;
-      width: 100%;
+      flex-direction: column;
+      width: 45%;
 
-      ::ng-deep .ant-form-item {
-        width: 100%;
-
-        ::ng-deep .ant-input {
-          width: 100%;
-        }
+      ::ng-deep .ant-form-item{
+       padding-bottom: 0%;
       }
-
     }
 
     .form-row-2 {
       display: flex;
-      margin: 0;
-      padding: 0;
-      width: 100%;
+      width: 55%;
+      margin-left: 2%;
 
       ::ng-deep .ant-form-item {
-        width: 50%;
-
-        ::ng-deep .ant-select:nth-child(2) {
-          width: 70%;
-        }
-
-      }
-    }
-
-    .form-row-3 {
-      display: flex;
-      margin: 0;
-      padding: 0;
-      width: 100%;
-
-      ::ng-deep .ant-form-item {
-        width: 45%;
-
-        ::ng-deep .ant-picker {
-          width: 50%;
-        }
-      }
-
-      ::ng-deep .ant-form-item:nth-child(3) {
-        width: 10%;
-      }
-    }
-
-    .form-row-4,
-    .form-row-5 {
-      display: flex;
-      margin: 0;
-      padding: 0;
-      width: 100%;
-
-      ::ng-deep .ant-form-item {
+        display: flex;
+        flex-direction: column;
         width: 100%;
+        height: 93%;
+        margin-top: -2.5%;
 
-        ::ng-deep .ant-input {
-          width: 100%;
-          resize: none;
-          overflow: auto
+        ::ng-deep .ant-form-item-label {
+          text-align: left;
         }
-      }
-    }
 
-    .form-row-4 {
-      ::ng-deep .ant-input {
-        height: 12vh;
-      }
-    }
+        ::ng-deep .ant-form-item-control-input {
+          height: 100%;
 
-    .form-row-5 {
-      ::ng-deep .ant-input {
-        height: 55vh;
+          ::ng-deep .ant-form-item-control-input-content {
+            height: 100%;
+
+            ::ng-deep textarea.ant-input {
+              height: 100%;
+              border-radius: 4px;
+              resize: none;
+            }
+          }
+        }
+
       }
     }
   }

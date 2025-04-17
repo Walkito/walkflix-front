@@ -27,7 +27,12 @@
             <p>{{episode.dtRelease | date:"dd/MM/yyyy"}}</p>
           </div>
         </nz-list-item>
-        <nz-icon nzType="close-circle"></nz-icon>
+        <nz-icon nzType="close-circle"
+        nz-popconfirm
+        nzPopconfirmTitle="Deseja realmente deletar o episódio?"
+        nzPopconfirmPlacement="top"
+        (nzOnConfirm)="deleteEpisode(episode.id)"
+        nzOkText="Sim"></nz-icon>
       </div>
       }
     </nz-list>

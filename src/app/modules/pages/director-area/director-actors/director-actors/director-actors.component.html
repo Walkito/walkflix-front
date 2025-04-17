@@ -1,0 +1,58 @@
+<main>
+  <div class="tab">
+    <div class="filter">
+      <div class="filters">
+        <form [formGroup]="filterForm">
+          <nz-select formControlName="filterOption">
+            <nz-option nzValue="codigo" nzLabel="Código" nz></nz-option>
+            <nz-option nzValue="nome" nzLabel="Nome"></nz-option>
+          </nz-select>
+          <nz-input-group nzSearch [nzAddOnAfter]="iconSearch">
+            <input type="text" nz-input placeholder="Descrição da Pesquisa" formControlName="description">
+          </nz-input-group>
+          <ng-template #iconSearch>
+            <button nz-button nzType="primary" nzSearch (click)="searchActors()"><nz-icon nzType="search" /></button>
+          </ng-template>
+          <div class="filters-director-select">
+            <nz-select [nzMaxTagCount]="1" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+              nzPlaceHolder="Nenhuma série selecionada" formControlName="selectedSeries">
+              @for (serie of series; track serie.id) {
+              <nz-option [nzLabel]="serie.txSeriesName"
+                [nzValue]="serie"></nz-option>
+              }
+            </nz-select>
+            <ng-template #tagPlaceHolder let-selectedList>
+              e + {{ selectedQuantity() }} selecionado(s)
+            </ng-template>
+          </div>
+        </form>
+      </div>
+      <div class="btns">
+        <button (click)="showModal('Cadastrar', 0)">Novo</button>
+      </div>
+    </div>
+    <nz-table #actorsTable [nzData]="actors" [nzPageSize]="6" [nzShowPagination]="true" [nzFrontPagination]="true" >
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Cidade</th>
+          <th>Nascimento</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (actor of actorsTable.data; track actor.id) {
+        <tr (click)="actor.id ? showModal('Atualizar', actor.id) : null">
+          <td>{{ actor.id }}</td>
+          <td>{{ actor.txActorName + ' ' + actor.txActorSurname}}</td>
+          <td>{{ actor.txCity}}</td>
+          <td>{{ actor.dtBirthday | date:"dd/MM/yyyy" }}</td>
+          <td>{{ actor.status }}</td>
+        </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</main>
+

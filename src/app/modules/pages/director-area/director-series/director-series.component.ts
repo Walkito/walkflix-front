@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Serie } from 'app/modules/interfaces/serie';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -9,12 +9,13 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { Actor } from 'app/modules/interfaces/actor';
 import { SeriesService } from 'app/shared/services/series.service';
 import { ApiResponse } from 'app/modules/interfaces/api-response';
-import { Subject, Subscription, take, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { Utils } from 'app/shared/utils/utils.service';
 import { DatePipe } from '@angular/common';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { SeriesFormComponent } from './series-form/series-form.component';
 import { ActorService } from 'app/shared/services/actor.service';
+import { NotificationService } from 'app/shared/services/notification.service';
 
 @Component({
   selector: 'app-director-series',
@@ -26,6 +27,8 @@ import { ActorService } from 'app/shared/services/actor.service';
 export class DirectorSeriesComponent implements OnInit, OnDestroy {
   #seriesService = inject(SeriesService);
   #actorService = inject(ActorService);
+  #modalService = inject(NzModalService);
+  #notificationService = inject(NotificationService);
   #modal = inject(NzModalService);
   #destroy$ = new Subject<void>();
   #descriptionValue: string = '';
@@ -97,6 +100,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
+                this.getAllSeries();
                 this.unsubscribeAll();
               }
             },
@@ -146,9 +150,42 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
+                this.getAllSeries();
                 this.unsubscribeAll();
 
                 this.#showUpdateButton = true;
+              }
+            },
+            {
+              label: 'Excluir',
+              type: 'primary',
+              danger: true,
+              className: 'exclude-button',
+              show: () => this.#showUpdateButton,
+              onClick: () => {
+                const modalRefTwo = this.#modalService.create({
+                  nzTitle: 'Atenção',
+                  nzContent: 'Deseja realmente excluir esta série?',
+                  nzFooter: [
+                    {
+                      label: 'Cancelar',
+                      type: 'default',
+                      onClick: () => {
+                        modalRefTwo.close();
+                      }
+                    },
+                    {
+                      label: 'Sim, tenho certeza',
+                      type: 'primary',
+                      onClick: () => {
+                        this.deleteSeries(id);
+
+                        modalRefTwo.close();
+                        modalRef.close();
+                      }
+                    }
+                  ]
+                });
               }
             },
             {
@@ -172,10 +209,23 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
         });
 
         const instance = modalRef.getContentComponent() as SeriesFormComponent;
-        this.#subscriptions.push(instance.showUpdateButton.subscribe((valor) => this.#showUpdateButton = valor ));
+        this.#subscriptions.push(instance.showUpdateButton.subscribe((valor) => this.#showUpdateButton = valor));
         break;
       }
     }
+  }
+
+  private deleteSeries(id: number) {
+    this.#seriesService.deleteSeries(id).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: () => {
+        this.getAllSeries();
+        this.#notificationService.createNotification("Sucesso", "Série deletada com sucesso", 0);
+      },
+      error: (error) => {
+        console.log(error);
+        this.#notificationService.createNotification("Erro", "Erro ao excluir a série.", 1);
+      }
+    })
   }
 
   private unsubscribeAll() {
@@ -189,7 +239,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
         this.directors = response.obj;
       },
       error: (error) => {
-        if (error.status == 404){
+        if (error.status == 404) {
           this.directors = [];
         }
       }

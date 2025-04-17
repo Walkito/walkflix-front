@@ -264,27 +264,27 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+            return;
           }
         });
-        return;
       }
       if (this.bannerDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+            return;
           }
         });
-        return;
       }
       if (this.thumbnailDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+            return;
           }
         });
-        return;
       }
 
       this.#seriesService.editSeries(this.idSerie, payload).pipe(takeUntil(this.#destroy$)).subscribe({
