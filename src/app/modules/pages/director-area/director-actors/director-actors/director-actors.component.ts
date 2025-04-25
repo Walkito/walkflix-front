@@ -7,7 +7,6 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Actor } from 'app/modules/interfaces/actor';
-import { SeriesService } from 'app/shared/services/series.service';
 import { ApiResponse } from 'app/modules/interfaces/api-response';
 import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { Utils } from 'app/shared/utils/utils.service';
@@ -42,7 +41,7 @@ export class DirectorActorsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.showModal('Cadastrar', 0);
+    this.showModal('Atualizar', 1);
     this.searchActors();
     this.formRoutines();
   }
@@ -99,7 +98,9 @@ export class DirectorActorsComponent implements OnInit {
           nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
           nzStyle: { top: '10px', width: '1200px' },
           nzData: {
-
+            title: 'Atualizar Ator / Atriz',
+            id: id,
+            create: false
           },
           nzFooter: [
             {
@@ -118,10 +119,19 @@ export class DirectorActorsComponent implements OnInit {
               }
             },
             {
-              label: 'Cadastrar',
+              label: 'Atualizar',
               type: 'primary',
               onClick: () => {
                 modalRef.close();
+
+                const instance = modalRef.getContentComponent() as ActorFormComponent
+
+                this.unsubscribeAll();
+
+                this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+                this.#subscriptions.push(instance.searchActors.subscribe(() => this.searchActors()));
+
+                instance.editActor();
               }
             }
           ]

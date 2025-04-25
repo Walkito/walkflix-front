@@ -41,8 +41,14 @@ export class ActorService {
     return this.#http.post<ApiResponse>(`${this.apiPath}`, payload);
   }
 
-  uploadProfilePicture(id: number, imageDTO: ImageDTO): Observable<ApiResponse>{
+  editActor(id: number, payload: Actor): Observable<ApiResponse>{
     const params : HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.put<ApiResponse>(`${this.apiPath}`, payload, { params });
+  }
+
+  uploadProfilePicture(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse>{
+    const params : HttpParams = new HttpParams().set('id', id).set('path', path);
 
     return this.#http.post<ApiResponse>(`${this.apiPath}/upload`, imageDTO, { params });
   }

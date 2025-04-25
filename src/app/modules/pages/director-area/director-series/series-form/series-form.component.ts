@@ -119,7 +119,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
           }
           );
 
-          this.#utils.downloadAndConvertToBase64(serie.txPicturePoster).pipe(takeUntil(this.#destroy$)).subscribe({
+          this.#utils.downloadAndConvertToBase64(serie.txPictureBanner).pipe(takeUntil(this.#destroy$)).subscribe({
             next: blob => {
               const reader = new FileReader();
               reader.readAsDataURL(blob);
@@ -221,7 +221,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
             });
           }
           if (this.bannerDTO.fileName) {
-            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Banner', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -230,7 +230,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
             });
           }
           if (this.thumbnailDTO.fileName) {
-            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Thumbnail', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -269,7 +269,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
         });
       }
       if (this.bannerDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Poster', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Banner', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
@@ -278,7 +278,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
         });
       }
       if (this.thumbnailDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Poster', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Thumbnail', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
           error: (error) => {
             console.log(error);
             this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);

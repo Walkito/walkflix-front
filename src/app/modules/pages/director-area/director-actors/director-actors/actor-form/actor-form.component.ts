@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Inject, OnDestroy, OnInit, Optional, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, Inject, OnDestroy, OnInit, Optional, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -30,7 +30,7 @@ import { Actor } from 'app/modules/interfaces/actor';
   styleUrl: './actor-form.component.scss',
   providers: [Utils, DatePipe]
 })
-export class ActorFormComponent {
+export class ActorFormComponent implements AfterViewInit {
   @Output() closeModal = new EventEmitter<void>()
   @Output() searchActors = new EventEmitter<void>()
   @Output() showUpdateButton = new EventEmitter<boolean>();
@@ -39,18 +39,21 @@ export class ActorFormComponent {
   #actorService = inject(ActorService);
   #notificationService = inject(NotificationService);
   #destroy$ = new Subject<void>();
+  #create: boolean = true;
 
   selectedTab: number = 0;
   title: string = '';
   imageError: boolean = false;
   idActor: number = 0;
 
-  constructor(@Optional() @Inject(NZ_MODAL_DATA) public data: { title: string }) {
+  constructor(@Optional() @Inject(NZ_MODAL_DATA) public data: { title: string, id: number, create: boolean }) {
     if (!data) return;
 
-    const { title } = data;
+    const { title, id, create } = data;
 
     this.title = title;
+    this.idActor = id;
+    this.#create = create;
   };
 
   actorForm: FormGroup = new FormGroup({
@@ -62,9 +65,15 @@ export class ActorFormComponent {
     status: new FormControl<boolean>(true)
   });
 
-  profilePictureDTO : ImageDTO = {
+  profilePictureDTO: ImageDTO = {
     fileName: '',
     imageB64: ''
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.#create) {
+      this.getActor();
+    }
   }
 
   ngOnDestroy(): void {
@@ -89,41 +98,128 @@ export class ActorFormComponent {
     this.profilePictureDTO.fileName = file.file.name;
   }
 
-  createActor() {
-    const payload : Actor = this.buildPayLoad();
-
-    this.#actorService.createActor(payload).pipe(takeUntil(this.#destroy$)).subscribe({
+  getActor() {
+    this.#actorService.findActorsWithFilter(this.idActor, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
-        this.idActor = response.obj.id;
+        const actor: Actor = response.obj[0];
 
-        if(this.profilePictureDTO.fileName){
-          this.#actorService.uploadProfilePicture(this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-            error : (error) => {
+        this.actorForm.patchValue({
+          actorName: actor.txActorName,
+          actorSurname: actor.txActorSurname,
+          city: actor.txCity,
+          birthday: actor.dtBirthday,
+          biography: actor.txBiography,
+          status: actor.status === 'ATIVO'
+        });
+
+        this.#utils.downloadAndConvertToBase64(actor.txProfilePicture).pipe(takeUntil(this.#destroy$)).subscribe({
+          next: blob => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+
+            reader.onloadend = () => {
+              this.profilePictureDTO.imageB64 = reader.result as string;
+            };
+          },
+          error: error => {
+            if (error.status !== 404) {
               console.log(error);
-              this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
-              this.imageError = true;
             }
-          });
-        }
+          }
+        });
 
-        this.closeModal.emit();
-        this.searchActors.emit();
+      },
+      error: (error) => {
+        if (error.status !== 404) {
+          console.log(error);
+        } else {
+          this.#notificationService.createNotification('Erro', 'Ator não encontrado', 1);
+        }
       }
     });
   }
 
-  private buildPayLoad() : Actor {
-    const payload : Actor = {
-      id : 0,
-      txActorName : this.actorForm.get('actorName')?.value,
-      txActorSurname : this.actorForm.get('actorSurname')?.value,
-      dtBirthday : this.actorForm.get('birthday')?.value,
-      txCity : this.actorForm.get('city')?.value,
-      txBiography : this.actorForm.get('biography')?.value,
-      txProfilePicture : '',
-      status : this.actorForm.get('status')?.value === true ? 'ATIVO' : 'APOSENTADO'
+  createActor() {
+    if (this.validateForms()) {
+      const payload: Actor = this.buildPayLoad();
+
+      this.#actorService.createActor(payload).pipe(takeUntil(this.#destroy$)).subscribe({
+        next: (response: ApiResponse) => {
+          this.idActor = response.obj.id;
+
+          if (this.profilePictureDTO.fileName) {
+            this.#actorService.uploadProfilePicture(`actors/profilePicture/${payload.id} - ${payload.txActorName} ${payload.txActorSurname}/`,
+              this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+                error: (error) => {
+                  console.log(error);
+                  this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                  this.imageError = true;
+                }
+              });
+          }
+
+          this.closeModal.emit();
+          this.searchActors.emit();
+
+          this.#notificationService.createNotification('Sucesso', 'Ator/Atriz criado(a) com sucesso', 0);
+        }
+      });
+    }
+  }
+
+editActor(){
+  if(this.validateForms()) {
+    const payload: Actor = this.buildPayLoad();
+
+      this.#actorService.editActor(this.idActor, payload).pipe(takeUntil(this.#destroy$)).subscribe({
+        next: (response: ApiResponse) => {
+          this.idActor = response.obj.id;
+
+          if (this.profilePictureDTO.fileName) {
+            this.#actorService.uploadProfilePicture(`actors/profilePicture/${payload.id} - ${payload.txActorName} ${payload.txActorSurname}/`,
+              this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+                error: (error) => {
+                  console.log(error);
+                  this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                }
+              });
+          }
+
+          this.closeModal.emit();
+          this.searchActors.emit();
+
+          this.#notificationService.createNotification('Sucesso', 'Ator/Atriz atualizado(a) com sucesso', 0);
+        }
+      });
+  }
+}
+
+  private buildPayLoad(): Actor {
+    const payload: Actor = {
+      id: 0,
+      txActorName: this.actorForm.get('actorName')?.value,
+      txActorSurname: this.actorForm.get('actorSurname')?.value,
+      dtBirthday: this.actorForm.get('birthday')?.value,
+      txCity: this.actorForm.get('city')?.value,
+      txBiography: this.actorForm.get('biography')?.value,
+      txProfilePicture: '',
+      status: this.actorForm.get('status')?.value === true ? 'ATIVO' : 'APOSENTADO'
     }
 
     return payload;
+  }
+
+  private validateForms(): boolean {
+    if (!this.actorForm.valid) {
+      Object.entries(this.actorForm.controls).forEach(([key, control]) => {
+        if (control.invalid) {
+          this.#notificationService.createNotification("Formulário Incompleto", "Existem campos inválidos no formulário.", 1);
+        }
+      });
+
+      return false;
+    } else {
+      return true;
+    }
   }
 }
