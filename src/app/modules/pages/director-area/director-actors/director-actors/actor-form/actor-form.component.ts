@@ -20,11 +20,12 @@ import { ActorService } from 'app/shared/services/actor.service';
 import { ImageDTO } from 'app/modules/interfaces/image-dto';
 import { Actor } from 'app/modules/interfaces/actor';
 import { ActorSeriesComponent } from "../actor-series/actor-series.component";
+import { ActorCharacterComponent } from "../actor-character/actor-character.component";
 
 @Component({
   selector: 'app-actor-form',
   imports: [NzFormModule, NzInputModule, ReactiveFormsModule, NzSelectModule,
-    NzDatePickerModule, NzUploadModule, NzIconModule, NzImageModule, NzCheckboxModule, NzAlertModule, NzTabsModule, ActorSeriesComponent],
+    NzDatePickerModule, NzUploadModule, NzIconModule, NzImageModule, NzCheckboxModule, NzAlertModule, NzTabsModule, ActorSeriesComponent, ActorCharacterComponent],
   templateUrl: './actor-form.component.html',
   styleUrl: './actor-form.component.scss',
   providers: [Utils, DatePipe]

@@ -38,6 +38,12 @@ export class ActorService {
     return this.#http.get<ApiResponse>(`${this.apiPath}/actorSeries`, { params });
   }
 
+  getActorCharacter(id: number){
+    const params: HttpParams = new HttpParams().set('id', id).set('id', id);
+
+    return this.#http.get<ApiResponse>(`${this.apiPath}/actorCharacters`, { params });
+  }
+
   createActor(payload: Actor): Observable<ApiResponse>{
     return this.#http.post<ApiResponse>(`${this.apiPath}`, payload);
   }
