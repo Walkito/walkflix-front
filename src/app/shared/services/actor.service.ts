@@ -14,16 +14,11 @@ export class ActorService {
   private apiPath = `${environment.apiUrl}actor`;
   #http = inject(HttpClient);
 
-  findAllDirectors(): Observable<ApiResponse>{
+  getAllDirectors(): Observable<ApiResponse>{
     return this.#http.get<ApiResponse>(`${this.apiPath}/directors`);
   }
 
-  findDirectorBySerie(serieId: number): Observable<ApiResponse>{
-    const params : HttpParams = new HttpParams().set('serieId', serieId);
-    return this.#http.get<ApiResponse>(`${this.apiPath}/director`, { params });
-  }
-
-  findActorsWithFilter(id: number, txActorName: string, series: Serie[]): Observable<ApiResponse>{
+  getActor(id: number, txActorName: string, series: Serie[]): Observable<ApiResponse>{
     let params : HttpParams = new HttpParams().set('id', id).set('txActorName', txActorName);
 
     if (series && series.length > 0) {
@@ -34,7 +29,13 @@ export class ActorService {
       params = params.append('series', 0);
     }
 
-    return this.#http.get<ApiResponse>(`${this.apiPath}/filter`, { params });
+    return this.#http.get<ApiResponse>(`${this.apiPath}`, { params });
+  }
+
+  getActorSeries(id: number): Observable<ApiResponse>{
+    const params: HttpParams = new HttpParams().set('id', id).set('id', id);
+
+    return this.#http.get<ApiResponse>(`${this.apiPath}/actorSeries`, { params });
   }
 
   createActor(payload: Actor): Observable<ApiResponse>{
@@ -45,6 +46,12 @@ export class ActorService {
     const params : HttpParams = new HttpParams().set('id', id);
 
     return this.#http.put<ApiResponse>(`${this.apiPath}`, payload, { params });
+  }
+
+  deleteActor(id:number): Observable<ApiResponse>{
+    const params : HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.delete<ApiResponse>(`${this.apiPath}`, { params });
   }
 
   uploadProfilePicture(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse>{

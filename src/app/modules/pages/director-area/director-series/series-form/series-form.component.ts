@@ -1,6 +1,6 @@
 import { ImageDTO } from './../../../../interfaces/image-dto';
 import { Component, EventEmitter, inject, Inject, OnDestroy, OnInit, Optional, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Actor } from 'app/modules/interfaces/actor';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -21,7 +21,6 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NotificationService } from 'app/shared/services/notification.service';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DirectorEpisodeComponent } from '../director-episode/director-episode.component';
-import { ActorService } from 'app/shared/services/actor.service';
 
 @Component({
   selector: 'app-series-form',
@@ -38,9 +37,9 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
 
   #utils = inject(Utils);
   #seriesService = inject(SeriesService);
-  #actorService = inject(ActorService);
   #destroy$ = new Subject<void>();
   #notificationService = inject(NotificationService);
+  #serie: Serie = {} as Serie;
 
   selectedTab: number = 0;
   create: boolean = false;
@@ -86,23 +85,22 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.create) {
-      let serie: Serie = {} as Serie;
-      this.#seriesService.getSeriesWithFilter(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
+      this.#seriesService.getSeries(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
-          serie = response.obj[0];
+          this.#serie = response.obj[0];
 
           this.serieForms.patchValue({
-            seriesName: serie.txSeriesName,
-            directors: serie.director.id,
-            dtLaunch: serie.dtLaunch,
-            dtClosure: serie.dtClosure,
-            classification: serie.nuAgeClassification,
-            status: serie.tpActive,
-            resume: serie.txResume,
-            description: serie.txDescription,
+            seriesName: this.#serie.txSeriesName,
+            directors: this.#serie.director.id,
+            dtLaunch: this.#serie.dtLaunch,
+            dtClosure: this.#serie.dtClosure,
+            classification: this.#serie.nuAgeClassification,
+            status: this.#serie.tpActive,
+            resume: this.#serie.txResume,
+            description: this.#serie.txDescription,
           });
 
-          this.#utils.downloadAndConvertToBase64(serie.txPicturePoster).pipe(takeUntil(this.#destroy$)).subscribe({
+          this.#utils.downloadAndConvertToBase64(this.#serie.txPicturePoster).pipe(takeUntil(this.#destroy$)).subscribe({
             next: blob => {
               const reader = new FileReader();
               reader.readAsDataURL(blob);
@@ -119,7 +117,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
           }
           );
 
-          this.#utils.downloadAndConvertToBase64(serie.txPictureBanner).pipe(takeUntil(this.#destroy$)).subscribe({
+          this.#utils.downloadAndConvertToBase64(this.#serie.txPictureBanner).pipe(takeUntil(this.#destroy$)).subscribe({
             next: blob => {
               const reader = new FileReader();
               reader.readAsDataURL(blob);
@@ -136,7 +134,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
           }
           );
 
-          this.#utils.downloadAndConvertToBase64(serie.txPictureThumbnail).pipe(takeUntil(this.#destroy$)).subscribe({
+          this.#utils.downloadAndConvertToBase64(this.#serie.txPictureThumbnail).pipe(takeUntil(this.#destroy$)).subscribe({
             next: blob => {
               const reader = new FileReader();
               reader.readAsDataURL(blob);
@@ -259,36 +257,37 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
     if (this.validateForms()) {
       const payload: Serie = this.buildPayload();
 
-      if (this.posterDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-          error: (error) => {
-            console.log(error);
-            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-            return;
-          }
-        });
-      }
-      if (this.bannerDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Banner', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-          error: (error) => {
-            console.log(error);
-            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-            return;
-          }
-        });
-      }
-      if (this.thumbnailDTO.fileName) {
-        this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Thumbnail', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-          error: (error) => {
-            console.log(error);
-            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
-            return;
-          }
-        });
-      }
-
       this.#seriesService.editSeries(this.idSerie, payload).pipe(takeUntil(this.#destroy$)).subscribe({
         next: () => {
+
+          if (this.posterDTO.fileName) {
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/posters/`, this.idSerie, 'Poster', this.posterDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+                return;
+              }
+            });
+          }
+          if (this.bannerDTO.fileName) {
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/banners/`, this.idSerie, 'Banner', this.bannerDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+                return;
+              }
+            });
+          }
+          if (this.thumbnailDTO.fileName) {
+            this.#seriesService.uploadSeriesPicture(`series/${payload.txSeriesName}/thumbnails/`, this.idSerie, 'Thumbnail', this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imgagem: ' + error.error.txMessage, 1);
+                return;
+              }
+            });
+          }
+
           this.closeModal.emit();
           this.searchSeries.emit();
 
@@ -331,9 +330,9 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
       nuAgeClassification: this.serieForms.get('classification')?.value,
       txResume: this.serieForms.get('resume')?.value,
       txDescription: this.serieForms.get('description')?.value,
-      txPictureBanner: '',
-      txPicturePoster: '',
-      txPictureThumbnail: ''
+      txPictureBanner: this.#serie.txPictureBanner || '',
+      txPicturePoster: this.#serie.txPicturePoster || '',
+      txPictureThumbnail: this.#serie.txPictureThumbnail || ''
     };
 
     return payload;

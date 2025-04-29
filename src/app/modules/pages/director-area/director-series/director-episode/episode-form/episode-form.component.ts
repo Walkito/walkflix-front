@@ -33,6 +33,7 @@ export class EpisodeFormComponent implements AfterViewInit {
   #notificationService = inject(NotificationService);
   #destroy$ = new Subject<void>();
   #episodeService = inject(EpisodeService);
+  #episode: Episode = {} as Episode;
 
   title: string = '';
   idSerie: number = 0;
@@ -64,7 +65,7 @@ export class EpisodeFormComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.#serieService.getSeriesWithFilter(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#serieService.getSeries(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj[0];
       },
@@ -77,19 +78,19 @@ export class EpisodeFormComponent implements AfterViewInit {
     });
 
     if (!this.create) {
-      let episode: Episode = {} as Episode;
+
       this.#episodeService.getEpisode(this.idEpisode).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
-          episode = response.obj;
+          this.#episode = response.obj;
 
           this.episodeForm.patchValue({
-            txEpisodeName: episode.txEpisodeName,
-            dtRelease: episode.dtRelease,
-            nuDuration: episode.nuDuration,
-            txResume: episode.txResume
+            txEpisodeName: this.#episode.txEpisodeName,
+            dtRelease: this.#episode.dtRelease,
+            nuDuration: this.#episode.nuDuration,
+            txResume: this.#episode.txResume
           });
 
-          this.#utilsSerivce.downloadAndConvertToBase64(episode.txEpisodePicture).pipe(takeUntil(this.#destroy$)).subscribe({
+          this.#utilsSerivce.downloadAndConvertToBase64(this.#episode.txEpisodePicture).pipe(takeUntil(this.#destroy$)).subscribe({
             next: blob => {
               const reader = new FileReader();
               reader.readAsDataURL(blob);
@@ -159,19 +160,20 @@ export class EpisodeFormComponent implements AfterViewInit {
     if (this.validateForms()) {
       const payload = this.buildPayload();
 
-      if (this.thumbnailDTO.fileName) {
-        this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/thumbnails/`, this.idEpisode, this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
-          error: (error) => {
-            console.log(error);
-            this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
-
-            return;
-          }
-        })
-      }
-
       this.#episodeService.editEpisode(this.idEpisode, payload).pipe(takeUntil(this.#destroy$)).subscribe({
         next: () => {
+
+          if (this.thumbnailDTO.fileName) {
+            this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/thumbnails/`, this.idEpisode, this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+              error: (error) => {
+                console.log(error);
+                this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+
+                return;
+              }
+            })
+          }
+
           this.closeModal.emit();
           this.searchEpisodes.emit();
 
@@ -217,7 +219,7 @@ export class EpisodeFormComponent implements AfterViewInit {
       dtRelease: this.episodeForm.get('dtRelease')?.value,
       nuDuration: this.episodeForm.get('nuDuration')?.value,
       idSeries: this.series.id,
-      txEpisodePicture: ''
+      txEpisodePicture: this.#episode.txEpisodePicture || ''
     }
 
     return payload;

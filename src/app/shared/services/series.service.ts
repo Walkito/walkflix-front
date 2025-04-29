@@ -15,11 +15,7 @@ export class SeriesService {
 
   #http = inject(HttpClient);
 
-  getAllSerieS(): Observable<ApiResponse> {
-    return this.getSeriesWithFilter(0, '', [], 0);
-  }
-
-  getSeriesWithFilter(id: number, seriesName: string, directors: Actor[], dto: number) {
+  getSeries(id: number, seriesName: string, directors: Actor[], dto: number) {
     let params: HttpParams = new HttpParams().set('id', id).set('seriesName', seriesName).set('dto', dto);
 
     if (directors && directors.length > 0) {
@@ -30,7 +26,7 @@ export class SeriesService {
       params = params.append('directors', 0);
     }
 
-    return this.#http.get<ApiResponse>(`${this.apiPath}/filter`, { params });
+    return this.#http.get<ApiResponse>(`${this.apiPath}`, { params });
   }
 
   createSeries(serie: Serie) : Observable<ApiResponse>{

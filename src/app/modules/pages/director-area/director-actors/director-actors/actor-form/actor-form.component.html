@@ -64,7 +64,10 @@
       </div>
     </form>
   </nz-tab>
-  <nz-tab nzTitle="Séries" nzDisabled="true">
+  <nz-tab nzTitle="Séries" [nzDisabled]="create">
+    <app-actor-series [actorId]="idActor"></app-actor-series>
+  </nz-tab>
+  <nz-tab nzTitle="Personagens" [nzDisabled]="create">
 
   </nz-tab>
 </nz-tabset>

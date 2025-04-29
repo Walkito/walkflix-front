@@ -1,18 +1,16 @@
-import { AfterViewInit, Component, EventEmitter, inject, Inject, OnDestroy, OnInit, Optional, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, inject, Inject, Optional, Output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { NzUploadChangeParam, NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
-import { Serie } from 'app/modules/interfaces/serie';
 import { DatePipe } from '@angular/common';
 import { Utils } from 'app/shared/utils/utils.service';
-import { SeriesService } from 'app/shared/services/series.service';
 import { ApiResponse } from 'app/modules/interfaces/api-response';
 import { Subject, take, takeUntil } from 'rxjs';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -21,11 +19,12 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { ActorService } from 'app/shared/services/actor.service';
 import { ImageDTO } from 'app/modules/interfaces/image-dto';
 import { Actor } from 'app/modules/interfaces/actor';
+import { ActorSeriesComponent } from "../actor-series/actor-series.component";
 
 @Component({
   selector: 'app-actor-form',
   imports: [NzFormModule, NzInputModule, ReactiveFormsModule, NzSelectModule,
-    NzDatePickerModule, NzUploadModule, NzIconModule, NzImageModule, NzCheckboxModule, NzAlertModule, NzTabsModule],
+    NzDatePickerModule, NzUploadModule, NzIconModule, NzImageModule, NzCheckboxModule, NzAlertModule, NzTabsModule, ActorSeriesComponent],
   templateUrl: './actor-form.component.html',
   styleUrl: './actor-form.component.scss',
   providers: [Utils, DatePipe]
@@ -39,8 +38,9 @@ export class ActorFormComponent implements AfterViewInit {
   #actorService = inject(ActorService);
   #notificationService = inject(NotificationService);
   #destroy$ = new Subject<void>();
-  #create: boolean = true;
+  #actor: Actor = {} as Actor;
 
+  create: boolean = true;
   selectedTab: number = 0;
   title: string = '';
   imageError: boolean = false;
@@ -53,7 +53,7 @@ export class ActorFormComponent implements AfterViewInit {
 
     this.title = title;
     this.idActor = id;
-    this.#create = create;
+    this.create = create;
   };
 
   actorForm: FormGroup = new FormGroup({
@@ -71,7 +71,7 @@ export class ActorFormComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (!this.#create) {
+    if (!this.create) {
       this.getActor();
     }
   }
@@ -84,10 +84,10 @@ export class ActorFormComponent implements AfterViewInit {
   tabChange(index: number) {
     this.selectedTab = index;
 
-    if (index === 1) {
-      this.showUpdateButton.emit(false);
-    } else {
+    if (index === 0) {
       this.showUpdateButton.emit(true);
+    } else {
+      this.showUpdateButton.emit(false);
     }
   }
 
@@ -99,20 +99,20 @@ export class ActorFormComponent implements AfterViewInit {
   }
 
   getActor() {
-    this.#actorService.findActorsWithFilter(this.idActor, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#actorService.getActor(this.idActor, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
-        const actor: Actor = response.obj[0];
+        this.#actor = response.obj[0];
 
         this.actorForm.patchValue({
-          actorName: actor.txActorName,
-          actorSurname: actor.txActorSurname,
-          city: actor.txCity,
-          birthday: actor.dtBirthday,
-          biography: actor.txBiography,
-          status: actor.status === 'ATIVO'
+          actorName: this.#actor.txActorName,
+          actorSurname: this.#actor.txActorSurname,
+          city: this.#actor.txCity,
+          birthday: this.#actor.dtBirthday,
+          biography: this.#actor.txBiography,
+          status: this.#actor.status === 'ATIVO'
         });
 
-        this.#utils.downloadAndConvertToBase64(actor.txProfilePicture).pipe(takeUntil(this.#destroy$)).subscribe({
+        this.#utils.downloadAndConvertToBase64(this.#actor.txProfilePicture).pipe(takeUntil(this.#destroy$)).subscribe({
           next: blob => {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
@@ -167,9 +167,9 @@ export class ActorFormComponent implements AfterViewInit {
     }
   }
 
-editActor(){
-  if(this.validateForms()) {
-    const payload: Actor = this.buildPayLoad();
+  editActor() {
+    if (this.validateForms()) {
+      const payload: Actor = this.buildPayLoad();
 
       this.#actorService.editActor(this.idActor, payload).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
@@ -191,8 +191,8 @@ editActor(){
           this.#notificationService.createNotification('Sucesso', 'Ator/Atriz atualizado(a) com sucesso', 0);
         }
       });
+    }
   }
-}
 
   private buildPayLoad(): Actor {
     const payload: Actor = {
@@ -202,7 +202,7 @@ editActor(){
       dtBirthday: this.actorForm.get('birthday')?.value,
       txCity: this.actorForm.get('city')?.value,
       txBiography: this.actorForm.get('biography')?.value,
-      txProfilePicture: '',
+      txProfilePicture: this.#actor.txProfilePicture || '',
       status: this.actorForm.get('status')?.value === true ? 'ATIVO' : 'APOSENTADO'
     }
 
@@ -216,7 +216,6 @@ editActor(){
           this.#notificationService.createNotification("Formulário Incompleto", "Existem campos inválidos no formulário.", 1);
         }
       });
-
       return false;
     } else {
       return true;

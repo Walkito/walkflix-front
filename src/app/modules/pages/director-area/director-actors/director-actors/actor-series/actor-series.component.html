@@ -1,0 +1,24 @@
+<main>
+  @if (actorSeries.length !== 0) {
+  <div class="row-one">
+    <nz-list>
+      @for (serie of actorSeries; track serie.id; let i = $index) {
+      <div class="row">
+        <nz-list-item [class.last-item]="i === pagedSeries.length - 1">
+          <div class="item-row">
+            <p>{{serie.id}}</p>
+            <p>{{serie.txSeriesName}}</p>
+            <p>{{serie.director.txActorName + ' ' + serie.director.txActorSurname}}</p>
+            <p>{{serie.dtLaunch | date:"dd/MM/yyyy"}}</p>
+          </div>
+        </nz-list-item>
+      </div>
+      }
+    </nz-list>
+  </div>
+  } @else {
+  <div class="not-found-div">
+    <p class="not-found">Este Ator/Atriz ainda não faz parte de nenhum elenco.</p>
+  </div>
+  }
+</main>

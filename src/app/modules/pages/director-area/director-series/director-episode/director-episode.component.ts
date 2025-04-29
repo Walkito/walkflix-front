@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, inject, Input } from '@angular/core';
 import { ApiResponse } from 'app/modules/interfaces/api-response';
 import { Episode } from 'app/modules/interfaces/episode';
 import { EpisodeService } from 'app/shared/services/episode.service';

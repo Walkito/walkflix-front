@@ -47,9 +47,9 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.getAllSeries();
     this.formRoutines();
-    this.findAllDirectors();
+    this.searchSeries();
+    this.getAllDirectors();
   }
 
   ngOnDestroy(): void {
@@ -57,25 +57,14 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
     this.#destroy$.complete();
   }
 
-  getAllSeries(): void {
-    this.#seriesService.getAllSerieS().pipe(takeUntil(this.#destroy$)).subscribe({
-      next: (response: any) => {
-        this.series = response.obj;
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
-  }
-
   searchSeries() {
     switch (this.#filterOptionValue) {
       case 'codigo': {
-        this.getSeriesWithFilter(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedDirectors')?.value);
+        this.getSeries(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedDirectors')?.value);
         break;
       }
       case 'nome': {
-        this.getSeriesWithFilter(0, this.#descriptionValue, this.filterForm.get('selectedDirectors')?.value);
+        this.getSeries(0, this.#descriptionValue, this.filterForm.get('selectedDirectors')?.value);
         break;
       }
     }
@@ -100,7 +89,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
-                this.getAllSeries();
+                this.searchSeries();
                 this.unsubscribeAll();
               }
             },
@@ -115,7 +104,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
 
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
                 this.#subscriptions.push(instance.searchSeries.subscribe(() => {
-                  this.getAllSeries()
+                  this.searchSeries()
 
                   const serieId = instance.idSerie;
 
@@ -150,7 +139,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
               type: 'default',
               onClick: () => {
                 modalRef.close();
-                this.getAllSeries();
+                this.searchSeries();
                 this.unsubscribeAll();
 
                 this.#showUpdateButton = true;
@@ -199,7 +188,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
                 this.unsubscribeAll()
 
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
-                this.#subscriptions.push(instance.searchSeries.subscribe(() => this.getAllSeries()));
+                this.#subscriptions.push(instance.searchSeries.subscribe(() => this.searchSeries()));
 
                 instance.editSeries();
               }
@@ -218,7 +207,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   private deleteSeries(id: number) {
     this.#seriesService.deleteSeries(id).pipe(takeUntil(this.#destroy$)).subscribe({
       next: () => {
-        this.getAllSeries();
+        this.searchSeries();
         this.#notificationService.createNotification("Sucesso", "Série deletada com sucesso", 0);
       },
       error: (error) => {
@@ -233,8 +222,8 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
     this.#subscriptions = [];
   }
 
-  private findAllDirectors(): void {
-    this.#actorService.findAllDirectors().pipe(takeUntil(this.#destroy$)).subscribe({
+  private getAllDirectors(): void {
+    this.#actorService.getAllDirectors().pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.directors = response.obj;
       },
@@ -246,8 +235,8 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getSeriesWithFilter(id: number, seriesName: string, directors: Actor[]): void {
-    this.#seriesService.getSeriesWithFilter(id, seriesName, directors, 0).pipe(takeUntil(this.#destroy$)).subscribe({
+  private getSeries(id: number, seriesName: string, directors: Actor[]): void {
+    this.#seriesService.getSeries(id, seriesName, directors, 0).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj;
       },

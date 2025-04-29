@@ -24,10 +24,12 @@ import { ActorFormComponent } from './actor-form/actor-form.component';
 })
 export class DirectorActorsComponent implements OnInit {
   #actorService = inject(ActorService);
+  #notificationService = inject(NotificationService);
   #destroy$ = new Subject<void>();
   #modal = inject(NzModalService);
   #descriptionValue: string = '';
   #filterOptionValue: string = 'codigo';
+  #showUpdateButton: boolean = true;
   #subscriptions: Subscription[] = [];
 
   actors: Actor[] = [];
@@ -41,7 +43,6 @@ export class DirectorActorsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.showModal('Atualizar', 1);
     this.searchActors();
     this.formRoutines();
   }
@@ -87,7 +88,8 @@ export class DirectorActorsComponent implements OnInit {
                 instance.createActor();
               }
             }
-          ]
+          ],
+          nzClosable: false
         });
         break;
       }
@@ -114,16 +116,38 @@ export class DirectorActorsComponent implements OnInit {
               label: 'Excluir',
               type: 'primary',
               danger: true,
+              show: () => this.#showUpdateButton,
               onClick: () => {
-                modalRef.close();
+                const modalRefTwo = this.#modal.create({
+                  nzTitle: 'Atenção',
+                  nzContent: 'Deseja realmente excluir este Ator/Atriz?',
+                  nzFooter: [
+                    {
+                      label: 'Cancelar',
+                      type: 'default',
+                      onClick: () => {
+                        modalRefTwo.close();
+                      }
+                    },
+                    {
+                      label: 'Sim, tenho certeza',
+                      type: 'primary',
+                      onClick: () => {
+                        this.deleteSeries(id);
+
+                        modalRefTwo.close();
+                        modalRef.close();
+                      }
+                    }
+                  ]
+                });
               }
             },
             {
               label: 'Atualizar',
               type: 'primary',
+              show: () => !!this.#showUpdateButton,
               onClick: () => {
-                modalRef.close();
-
                 const instance = modalRef.getContentComponent() as ActorFormComponent
 
                 this.unsubscribeAll();
@@ -134,8 +158,12 @@ export class DirectorActorsComponent implements OnInit {
                 instance.editActor();
               }
             }
-          ]
+          ],
+          nzClosable: false
         });
+
+        const instance = modalRef.getContentComponent() as ActorFormComponent;
+        this.#subscriptions.push(instance.showUpdateButton.subscribe((valor) => this.#showUpdateButton = valor));
         break;
       }
     }
@@ -144,14 +172,27 @@ export class DirectorActorsComponent implements OnInit {
   searchActors() {
     switch (this.#filterOptionValue) {
       case 'codigo': {
-        this.findActorsWithFilter(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedSeries')?.value);
+        this.getActor(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedSeries')?.value);
         break;
       }
       case 'nome': {
-        this.findActorsWithFilter(0, this.#descriptionValue, this.filterForm.get('selectedSeries')?.value);
+        this.getActor(0, this.#descriptionValue, this.filterForm.get('selectedSeries')?.value);
         break;
       }
     }
+  }
+
+  private deleteSeries(id: number) {
+    this.#actorService.deleteActor(id).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: () => {
+        this.getActor(0, '', []);
+        this.#notificationService.createNotification("Sucesso", "Ator/Atriz deletado/deletada com sucesso", 0);
+      },
+      error: (error) => {
+        console.log(error);
+        this.#notificationService.createNotification("Erro", "Erro ao excluir o Ator/Atriz.", 1);
+      }
+    })
   }
 
   private unsubscribeAll() {
@@ -159,8 +200,8 @@ export class DirectorActorsComponent implements OnInit {
     this.#subscriptions = [];
   }
 
-  private findActorsWithFilter(id: number, txActorName: string, series: Serie[]) {
-    this.#actorService.findActorsWithFilter(id, txActorName, series).pipe(takeUntil(this.#destroy$)).subscribe({
+  private getActor(id: number, txActorName: string, series: Serie[]) {
+    this.#actorService.getActor(id, txActorName, series).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.actors = response.obj;
         this.actors.forEach((actor, index) => {
