@@ -3,14 +3,12 @@
   <div class="row-one">
     <nz-list>
       @for (character of actorCharacters; track character.character.id; let i = $index) {
-      <div class="row">
-        <nz-list-item [class.last-item]="i === actorCharacters.length - 1">
-          <div class="item-row">
-            <img [src]="character.localCharacterPicture" alt="Imagem de um personagem vinculado com o ator.">
-            <p>{{character.character.txCharacterName}}</p>
-          </div>
-        </nz-list-item>
-      </div>
+      <nz-list-item [class.last-item]="i === actorCharacters.length - 1">
+        <div class="item-row">
+          <img [src]="character.localCharacterPicture" alt="Imagem de um personagem vinculado com o ator.">
+          <p>{{character.character.txCharacterName}}</p>
+        </div>
+      </nz-list-item>
       }
     </nz-list>
   </div>
@@ -20,4 +18,3 @@
   </div>
   }
 </main>
-
