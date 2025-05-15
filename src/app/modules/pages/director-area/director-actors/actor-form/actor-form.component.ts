@@ -63,7 +63,8 @@ export class ActorFormComponent implements AfterViewInit {
     city: new FormControl<String>(''),
     birthday: new FormControl<Date>(new Date()),
     biography: new FormControl<String>(''),
-    status: new FormControl<boolean>(true)
+    status: new FormControl<boolean>(true),
+    director: new FormControl<boolean>(false)
   });
 
   profilePictureDTO: ImageDTO = {
@@ -110,7 +111,8 @@ export class ActorFormComponent implements AfterViewInit {
           city: this.#actor.txCity,
           birthday: this.#actor.dtBirthday,
           biography: this.#actor.txBiography,
-          status: this.#actor.status === 'ATIVO'
+          status: this.#actor.status === 'ATIVO',
+          director: this.#actor.director
         });
 
         this.#utils.downloadAndConvertToBase64(this.#actor.txProfilePicture).pipe(takeUntil(this.#destroy$)).subscribe({
@@ -149,7 +151,7 @@ export class ActorFormComponent implements AfterViewInit {
           this.idActor = response.obj.id;
 
           if (this.profilePictureDTO.fileName) {
-            this.#actorService.uploadProfilePicture(`actors/profilePicture/${payload.id} - ${payload.txActorName} ${payload.txActorSurname}/`,
+            this.#actorService.uploadProfilePicture(`actors/profilePicture/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/`,
               this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
@@ -177,7 +179,7 @@ export class ActorFormComponent implements AfterViewInit {
           this.idActor = response.obj.id;
 
           if (this.profilePictureDTO.fileName) {
-            this.#actorService.uploadProfilePicture(`actors/profilePicture/${payload.id} - ${payload.txActorName} ${payload.txActorSurname}/`,
+            this.#actorService.uploadProfilePicture(`actors/profilePicture/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/`,
               this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
@@ -204,7 +206,8 @@ export class ActorFormComponent implements AfterViewInit {
       txCity: this.actorForm.get('city')?.value,
       txBiography: this.actorForm.get('biography')?.value,
       txProfilePicture: this.#actor.txProfilePicture || '',
-      status: this.actorForm.get('status')?.value === true ? 'ATIVO' : 'APOSENTADO'
+      status: this.actorForm.get('status')?.value === true ? 'ATIVO' : 'APOSENTADO',
+      director : this.actorForm.get('director')?.value
     }
 
     return payload;

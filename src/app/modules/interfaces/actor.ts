@@ -10,4 +10,5 @@ export interface Actor{
   txCity: string;
   txProfilePicture: string;
   txBiography: string;
+  director: boolean;
 }

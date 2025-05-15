@@ -67,4 +67,17 @@ main {
       border: none;
     }
   }
+
+  .not-found-div {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1%;
+    
+    p {
+      font-size: 16px;
+      margin: 0;
+    }
+  }
 }

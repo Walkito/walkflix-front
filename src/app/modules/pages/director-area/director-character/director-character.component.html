@@ -1,0 +1,69 @@
+<main>
+    <div class="tab">
+        <div class="filter">
+            <div class="filters">
+                <form [formGroup]="filterForm">
+                    <nz-select formControlName="filterOption">
+                        <nz-option nzValue="codigo" nzLabel="Código" nz></nz-option>
+                        <nz-option nzValue="nome" nzLabel="Nome"></nz-option>
+                    </nz-select>
+                    <nz-input-group nzSearch [nzAddOnAfter]="iconSearch">
+                        <input type="text" nz-input placeholder="Descrição da Pesquisa" formControlName="description">
+                    </nz-input-group>
+                    <ng-template #iconSearch>
+                        <button nz-button nzType="primary" nzSearch (click)="searchCharacter()"><nz-icon
+                                nzType="search" /></button>
+                    </ng-template>
+                    <div class="filters-series-select">
+                        <nz-select [nzMaxTagCount]="1" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+                            nzPlaceHolder="Nenhuma série selecionada" formControlName="selectedSeries">
+
+                            @for (serie of series; track serie.id) {
+                            <nz-option [nzLabel]="serie.txSeriesName" [nzValue]="serie"></nz-option>
+                            }
+                        </nz-select>
+                        <ng-template #tagPlaceHolder let-selectedList>
+                            e + {{ selectedQuantity() }} selecionado(s)
+                        </ng-template>
+                    </div>
+                    <div class="filters-actor-select">
+                        <nz-select [nzMaxTagCount]="1" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+                            nzPlaceHolder="Nenhum ator/atriz selecionado(a)" formControlName="selectedActors">
+
+                            @for (actor of actors; track actor.id) {
+                            <nz-option [nzLabel]="actor.txActorName + ' ' + actor.txActorSurname" [nzValue]="actor"></nz-option>
+                            }
+                        </nz-select>
+                        <ng-template #tagPlaceHolder let-selectedList>
+                            e + {{ selectedQuantity() }} selecionado(s)
+                        </ng-template>
+                    </div>
+                </form>
+            </div>
+            <div class="btns">
+                <button (click)="showModal('Cadastrar', 0)">Novo</button>
+            </div>
+        </div>
+        <nz-table #charactersTable [nzData]="characters" [nzPageSize]="6" [nzShowPagination]="true"
+            [nzFrontPagination]="true">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Papel</th>
+                    <th>Ator/Atriz</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (character of charactersTable.data; track character.id) {
+                <tr (click)="character.id ? showModal('Atualizar', character.id) : null">
+                    <td>{{ character.id }}</td>
+                    <td>{{ character.txCharacterName }}</td>
+                    <td>{{ character.tpCharacterType }}</td>
+                    <td>{{ character.actor.txActorName + character.actor.txActorSurname}}</td>
+                </tr>
+                }
+            </tbody>
+        </nz-table>
+    </div>
+</main>

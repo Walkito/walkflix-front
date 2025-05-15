@@ -14,7 +14,7 @@
                 <nz-icon class="upload-icon" nzType="plus" />
                 <div class="ant-upload-text">Enviar</div>
                 } @else {
-                <img [src]="profilePictureDTO.imageB64" />
+                <img alt="Imagem de perfil do usuário" [src]="profilePictureDTO.imageB64" />
                 }
               </nz-upload>
             </div>
@@ -26,13 +26,15 @@
           <nz-form-item>
             <nz-form-label nzFor="actorName" nzRequired> Nome </nz-form-label>
             <nz-form-control nzErrorTip="Nome é obrigatório!">
-              <input nz-input formControlName="actorName" id="actorName" required maxlength="30">
+              <input nz-input formControlName="actorName" id="actorName" required maxlength="30"
+                placeholder="Nome do Ator/Atriz">
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label nzFor="actorSurname" nzRequired> Sobrenome </nz-form-label>
             <nz-form-control nzErrorTip="Sobrenome é obrigatório!">
-              <input nz-input formControlName="actorSurname" id="actorSurname" required maxlength="60">
+              <input nz-input formControlName="actorSurname" id="actorSurname" required maxlength="60"
+                placeholder="Sobrenome do Ator/Atriz">
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
@@ -44,20 +46,27 @@
           <nz-form-item>
             <nz-form-label nzFor="city">Cidade</nz-form-label>
             <nz-form-control>
-              <input nz-input formControlName="city" id="city" maxlength="80">
+              <input nz-input formControlName="city" id="city" maxlength="80" placeholder="Cidade de Origem">
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
-              <label nz-checkbox formControlName="status">Ativo</label>
-            </nz-form-control>
-          </nz-form-item>
+          <div class="checkbox-row">
+            <nz-form-item>
+              <nz-form-control>
+                <label nz-checkbox formControlName="status">Ativo</label>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <label nz-checkbox formControlName="director">Diretor(a)</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
         </div>
         <div class="form-row-2">
           <nz-form-item>
             <nz-form-label nzFor="biography" nzNoColon="true">Biografia</nz-form-label>
             <nz-form-control>
-              <textarea nz-input formControlName="biography"></textarea>
+              <textarea nz-input formControlName="biography" placeholder="Biografia..."></textarea>
             </nz-form-control>
           </nz-form-item>
         </div>

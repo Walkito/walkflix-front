@@ -112,6 +112,11 @@ form {
       ::ng-deep .ant-form-item{
        padding-bottom: 0%;
       }
+
+      .checkbox-row{
+        display: flex;
+        width: 100%;
+      }
     }
 
     .form-row-2 {

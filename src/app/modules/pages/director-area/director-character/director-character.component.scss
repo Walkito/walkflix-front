@@ -1,0 +1,149 @@
+main {
+    display: flex;
+    width: 100%;
+
+    .tab {
+        display: flex;
+        flex-direction: column;
+        width: 89%;
+        margin-left: 8%;
+
+        .filter {
+            display: flex;
+            width: 100%;
+            margin-top: -9.5%;
+            margin-bottom: 2%;
+
+            .filters {
+                display: flex;
+                width: 88%;
+                height: 100%;
+                align-items: center;
+
+                form {
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    width: 100%;
+
+                    ::ng-deep .ant-select {
+                        border-radius: 5px;
+                        width: 20%;
+                        align-items: center;
+                        height: 35px;
+
+                        ::ng-deep .ant-select-selector {
+                            transition: 0.25s;
+                            font-size: 16px;
+                            height: 35px;
+                        }
+                    }
+
+                    ::ng-deep .ant-input-group-wrapper {
+                        width:25%;
+
+                        ::ng-deep .ant-input-wrapper {
+                            margin-left: 3%;
+                            width: 95%;
+                            height: 35px;
+
+                            ::ng-deep .ant-input {
+                                font-size: 16px;
+                                height: 100%;
+                            }
+                        }
+
+                        ::ng-deep .ant-input-search-button {
+                            height: 100%;
+                        }
+                    }
+
+                    .filters-series-select {
+                        display: flex;
+                        width: 26%;
+
+                        ::ng-deep .ant-select {
+                            width: 100%;
+
+                            ::ng-deep .ant-select-selector:hover {
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    .filters-actor-select {
+                        display: flex;
+                        width: 26%;
+                        margin-left: 1%;
+
+                        ::ng-deep .ant-select {
+                            width: 100%;
+
+                            ::ng-deep .ant-select-selector:hover {
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .btns {
+                display: flex;
+                width: 12%;
+                justify-content: flex-end;
+                align-items: center;
+
+                button {
+                    border: 1px solid var(--gray-hover);
+                    border-radius: 5px;
+                    width: 100%;
+                    height: 35px;
+                    background-color: white;
+                    font-size: 16px;
+                    transition: 0.35s;
+                    color: var(--gray-color);
+                }
+
+                button:hover {
+                    cursor: pointer;
+                    border: none;
+                }
+            }
+
+            .btns button:nth-child(1):hover {
+                background-color: var(--ligth-blue-color);
+                color: white;
+            }
+        }
+
+        ::ng-deep .ant-table {
+            width: 100%;
+            margin-top: 0%;
+            font-size: 16px;
+
+            table th:nth-child(2),
+            table td:nth-child(2) {
+                text-align: left;
+            }
+
+            table th,
+            table td {
+                text-align: center;
+            }
+
+            table th {
+                font-weight: bold;
+            }
+
+            table td:hover {
+                cursor: pointer;
+            }
+
+        }
+
+        ::ng-deep .ant-table-pagination {
+            margin-top: 1%;
+            justify-content: center;
+        }
+    }
+}

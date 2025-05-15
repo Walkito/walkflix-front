@@ -1,3 +1,5 @@
+import { Actor } from "./actor";
+
 export interface Character{
   id: number;
   txCharacterName: string;
@@ -8,4 +10,5 @@ export interface Character{
   txAge: string;
   txBiography: string;
   txCharacterPicture: string;
+  actor: Actor;
 }
