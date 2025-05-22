@@ -7,37 +7,76 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Actor } from 'app/modules/interfaces/actor';
-import { ApiResponse } from 'app/modules/interfaces/api-response';
 import { Subject, Subscription, take, takeUntil } from 'rxjs';
-import { Utils } from 'app/shared/utils/utils.service';
-import { DatePipe } from '@angular/common';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
-import { ActorService } from 'app/shared/services/actor.service';
-import { NotificationService } from 'app/shared/services/notification.service';
 import { Character } from 'app/modules/interfaces/character';
+import { CharacterFormComponent } from './character-form/character-form.component';
 
 @Component({
   selector: 'app-director-character',
-  imports: [NzTableModule, NzSelectModule, NzButtonModule, NzIconModule, NzInputModule, FormsModule, ReactiveFormsModule, NzModalModule, DatePipe],
+  imports: [NzTableModule, NzSelectModule, NzButtonModule, NzIconModule, NzInputModule, FormsModule, ReactiveFormsModule, NzModalModule],
   templateUrl: './director-character.component.html',
-  styleUrl: './director-character.component.scss'
+  styleUrl: './director-character.component.scss',
 })
 export class DirectorCharacterComponent {
+  #modal = inject(NzModalService);
+  #subscriptions: Subscription[] = [];
 
-  characters : Character[] = [];
-  series : Serie[] = [];
-  actors : Actor[] = [];
+  characters: Character[] = [];
+  series: Serie[] = [];
+  actors: Actor[] = [];
   selectedQuantity = signal(0);
-  
-  filterForm : FormGroup = new FormGroup({
 
+  filterForm: FormGroup = new FormGroup({
+    filterOption: new FormControl<string>('codigo'),
+    description: new FormControl<string>(''),
+    selectedSeries: new FormControl<Serie[]>([]),
+    selectedActors: new FormControl<Actor[]>([])
   });
 
-  searchCharacter(){
+  searchCharacter() {
 
   }
 
-  showModal(option: string, id: number){
-    
+  showModal(option: string, id: number) {
+    switch (option) {
+      case 'Cadastrar': {
+        const modalRef = this.#modal.create({
+          nzContent: CharacterFormComponent,
+          nzWidth: '72vw',
+          nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
+          nzStyle: { top: '10px', width: '1200px' },
+          nzData: {
+            title: 'Cadastrar Personagem'
+          },
+          nzFooter: [
+            {
+              label: 'Voltar',
+              type: 'default',
+              onClick: () => {
+                modalRef.close();
+              }
+            },
+            {
+              label: 'Cadastrar',
+              type: 'primary',
+              onClick: () => {
+                const instance = modalRef.getContentComponent() as CharacterFormComponent
+
+                this.unsubscribeAll();
+              }
+            }
+          ],
+          nzClosable: false
+        });
+        break;
+      }
+    }
+  }
+
+  private unsubscribeAll() {
+    this.#subscriptions.forEach(sub => sub.unsubscribe());
+    this.#subscriptions = [];
   }
 }
+

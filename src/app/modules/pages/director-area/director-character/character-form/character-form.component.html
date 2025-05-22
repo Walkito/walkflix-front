@@ -1,0 +1,85 @@
+<nz-tabset [(nzSelectedIndex)]="selectedTab" (nzSelectedIndexChange)="tabChange($event)">
+    <nz-tab nzTitle="Personagem">
+        <div class="title-row">
+            <h1>{{title}}</h1>
+        </div>
+        <form nz-form [formGroup]="characterForm">
+            <div class="left-block">
+                <nz-form-item>
+                    <nz-form-control>
+                        <div class="image-vertical-border">
+                            <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 0)"
+                                [nzShowUploadList]="false">
+                                @if (!characterPictureDTO.imageB64) {
+                                <nz-icon class="upload-icon" nzType="plus" />
+                                <div class="ant-upload-text">Enviar</div>
+                                } @else {
+                                <img alt="Imagem de perfil do usuário" [src]="characterPictureDTO.imageB64" />
+                                }
+                            </nz-upload>
+                        </div>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div class="center-block">
+                <nz-form-item>
+                    <nz-form-label nzFor="name" nzRequired>Nome do Personagem</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="Nome do personagem" name="name" formControlName="characterName">
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label nzFor="status">Status</nz-form-label>
+                    <nz-form-control>
+                        <nz-select formControlName="status">
+                            <nz-option nzValue="alive" nzLabel="Vivo"></nz-option>
+                            <nz-option nzValue="death" nzLabel="Morto"></nz-option>
+                            <nz-option nzValue="missing" nzLabel="Desaparecido(a)"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label nzFor="type">Papel</nz-form-label>
+                    <nz-form-control>
+                        <nz-select formControlName="type">
+                            <nz-option nzValue="protagonist" nzLabel="Protagonista"></nz-option>
+                            <nz-option nzValue="extra" nzLabel="Figurante"></nz-option>
+                            <nz-option nzValue="oponnent" nzLabel="Oponente"></nz-option>
+                            <nz-option nzValue="antagonist" nzLabel="Antagonista"></nz-option>
+                            <nz-option nzValue="supporting actor" nzLabel="Coadjuvante"></nz-option>
+                            <nz-option nzValue="co-protagonist" nzLabel="Coprotagonista"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label nzFor="origin">Origem</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="Origem do personagem" name="origin" formControlName="origin">
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label nzFor="first-epsode" nzRequired>Primeira Aparição</nz-form-label>
+                    <nz-form-control>
+                        <nz-input-number [nzMin]="1" formControlName="firstEpisode">
+                            <span nzInputPrefix>Episódio N°</span>
+                        </nz-input-number>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label nzFor="age">Idade</nz-form-label>
+                    <nz-form-control>
+                        <textarea name="age" nz-input placeholder="Idade do personagem" formControlName="age"></textarea>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div class="right-block">
+                <nz-form-item>
+                    <nz-form-label nzFor="biography">Biografia</nz-form-label>
+                    <nz-form-control>
+                        <textarea name="biography" nz-input placeholder="Biografia do personagem" formControlName="biography"></textarea>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </form>
+    </nz-tab>
+</nz-tabset>

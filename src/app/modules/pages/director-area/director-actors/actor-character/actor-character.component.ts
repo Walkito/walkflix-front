@@ -10,10 +10,9 @@ import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-actor-character',
-  imports: [NzListModule, DatePipe],
+  imports: [NzListModule],
   templateUrl: './actor-character.component.html',
   styleUrl: './actor-character.component.scss',
-  providers: [DatePipe]
 })
 export class ActorCharacterComponent implements AfterViewInit {
   @Input() actorId!: number;
