@@ -1,7 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Inject, inject, Optional, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Actor } from 'app/modules/interfaces/actor';
+import { Character } from 'app/modules/interfaces/character';
 import { ImageDTO } from 'app/modules/interfaces/image-dto';
+import { NotificationService } from 'app/shared/services/notification.service';
 import { Utils } from 'app/shared/utils/utils.service';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzFormControlComponent, NzFormItemComponent, NzFormLabelComponent, NzFormModule } from 'ng-zorro-antd/form';
@@ -25,10 +28,14 @@ export class CharacterFormComponent {
   @Output() showUpdateButton = new EventEmitter<boolean>();
 
   #utils = inject(Utils);
+  #notificationService = inject(NotificationService);
+
 
   selectedTab: number = 0;
   title: string = "";
-
+  actor: Actor = {} as Actor;
+  actors: Actor[] = [];
+  
   characterPictureDTO: ImageDTO = {
     imageB64: '',
     fileName: ''
@@ -52,6 +59,12 @@ export class CharacterFormComponent {
     biography: new FormControl<string>('')
   });
 
+  createCharacter() {
+    if (this.validateForms()) {
+
+    }
+  }
+
   handleChange(file: NzUploadChangeParam, type: number) {
     this.#utils.getBase64(file.file!.originFileObj!, (img: string) => {
       this.characterPictureDTO.imageB64 = img;
@@ -66,6 +79,20 @@ export class CharacterFormComponent {
       this.showUpdateButton.emit(false);
     } else {
       this.showUpdateButton.emit(true);
+    }
+  }
+
+
+  private validateForms(): boolean {
+    if (!this.characterForm.valid) {
+      Object.entries(this.characterForm.controls).forEach(([key, control]) => {
+        if (control.invalid) {
+          this.#notificationService.createNotification("Formulário Incompleto", "Existem campos inválidos no formulário.", 1);
+        }
+      });
+      return false;
+    } else {
+      return true;
     }
   }
 }

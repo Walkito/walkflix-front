@@ -1,0 +1,190 @@
+.title-row {
+    margin: 0;
+    margin-bottom: 2%;
+    width: 100%;
+    justify-items: center;
+
+    h1 {
+        margin: 0;
+        font-weight: bolder;
+        color: var(--back-color);
+    }
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+
+    .left-block {
+        display: flex;
+        flex-direction: column;
+        width: 30%;
+        margin: 0;
+        justify-content: center;
+
+        ::ng-deep .ant-form-item {
+            display: flex;
+            flex-direction: column;
+            height: 40vh;
+            width: 100%;
+            padding-right: 1.5vw;
+
+            ::ng-deep .ant-form-item-label {
+                text-align: left;
+            }
+
+            ::ng-deep .ant-form-item-control-input {
+                height: 100%;
+                width: 100%;
+
+                ::ng-deep .ant-form-item-control-input-content {
+                    height: 100%;
+                    width: 100%;
+
+                    .image-vertical-border,
+                    .image-horizontal-border {
+                        display: flex;
+                        width: 100%;
+                        height: 100%;
+
+                        ::ng-deep .image-upload {
+                            height: 100%;
+                            width: 100%;
+
+                            img {
+                                width: 100%;
+                                border-radius: 5px;
+                                overflow: hidden;
+                                transition: 0.5s;
+                            }
+
+                            img:hover {
+                                transform: scale(1.1);
+                            }
+
+                            ::ng-deep .ant-upload {
+                                border: 0.5px solid var(--gray-hover);
+                                border-radius: 5px;
+                                display: flex;
+                                flex-direction: column;
+                                height: 100%;
+                                width: 100%;
+                                justify-content: center;
+                                align-items: center;
+                                transition: 0.5s;
+                                font-weight: bold;
+                            }
+
+                            ::ng-deep .ant-upload:hover {
+                                cursor: pointer;
+                                border-color: var(--ligth-blue-color-border);
+                            }
+                        }
+                    }
+
+                    .image-horizontal-border {
+                        display: flex;
+                        width: 120%;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+    }
+
+    .center-block {
+        display: flex;
+        flex-direction: column;
+        width: 40%;
+
+        ::ng-deep .name-input,
+        .origin-input {
+            width: 97%;
+        }
+
+        .selected-row {
+            display: flex;
+            width: 100%;
+
+            ::ng-deep .ant-form-item:nth-child(1) {
+                width: 50%;
+
+                ::ng-deep .ant-select.ant-select-in-form-item {
+                    width: 100%;
+                }
+            }
+
+            ::ng-deep .ant-form-item:nth-child(2) {
+                margin-left: 2%;
+                width: 50%;
+
+                ::ng-deep .ant-select.ant-select-in-form-item {
+                    width: 93%;
+                }
+            }
+        }
+
+
+        ::ng-deep .ant-form-item:nth-child(5) {
+            width: 100%;
+        }
+
+        .age-actor-row {
+            display: flex;
+
+            ::ng-deep .ant-form-item:nth-child(1) {
+                width: 30%;
+
+                textarea {
+                    resize: none;
+                    width: 100%;
+                }
+
+            }
+
+            ::ng-deep .ant-form-item:nth-child(2) {
+                width: 70%;
+                margin-left: 2%;
+
+                ::ng-deep .ant-select.ant-select-in-form-item {
+                    width: 94%;
+                }
+            }
+        }
+    }
+
+    .rigth-block {
+        display: flex;
+        width: 30%;
+        flex-wrap: wrap;
+
+        ::ng-deep .ant-form-item {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: -3%;
+
+            ::ng-deep .ant-form-item-label {
+                text-align: left;
+            }
+
+            ::ng-deep .ant-form-item-control-input {
+                height: 100%;
+
+                ::ng-deep .ant-form-item-control-input-content {
+                    height: 100%;
+
+                    ::ng-deep textarea.ant-input {
+                        height: 100%;
+                        border-radius: 4px;
+                        resize: none;
+                    }
+                }
+            }
+        }
+    }
+}

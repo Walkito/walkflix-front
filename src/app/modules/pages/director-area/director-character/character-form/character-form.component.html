@@ -23,60 +23,78 @@
             </div>
             <div class="center-block">
                 <nz-form-item>
-                    <nz-form-label nzFor="name" nzRequired>Nome do Personagem</nz-form-label>
+                    <nz-form-label nzFor="name" nzRequired>Nome</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="Nome do personagem" name="name" formControlName="characterName">
+                        <input nz-input placeholder="Nome do personagem" name="name" formControlName="characterName"
+                            class="name-input">
                     </nz-form-control>
                 </nz-form-item>
-                <nz-form-item>
-                    <nz-form-label nzFor="status">Status</nz-form-label>
-                    <nz-form-control>
-                        <nz-select formControlName="status">
-                            <nz-option nzValue="alive" nzLabel="Vivo"></nz-option>
-                            <nz-option nzValue="death" nzLabel="Morto"></nz-option>
-                            <nz-option nzValue="missing" nzLabel="Desaparecido(a)"></nz-option>
-                        </nz-select>
-                    </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <nz-form-label nzFor="type">Papel</nz-form-label>
-                    <nz-form-control>
-                        <nz-select formControlName="type">
-                            <nz-option nzValue="protagonist" nzLabel="Protagonista"></nz-option>
-                            <nz-option nzValue="extra" nzLabel="Figurante"></nz-option>
-                            <nz-option nzValue="oponnent" nzLabel="Oponente"></nz-option>
-                            <nz-option nzValue="antagonist" nzLabel="Antagonista"></nz-option>
-                            <nz-option nzValue="supporting actor" nzLabel="Coadjuvante"></nz-option>
-                            <nz-option nzValue="co-protagonist" nzLabel="Coprotagonista"></nz-option>
-                        </nz-select>
-                    </nz-form-control>
-                </nz-form-item>
+                <div class="selected-row">
+                    <nz-form-item>
+                        <nz-form-label nzFor="status">Status</nz-form-label>
+                        <nz-form-control>
+                            <nz-select formControlName="status" class="status-select">
+                                <nz-option nzValue="alive" nzLabel="Vivo"></nz-option>
+                                <nz-option nzValue="death" nzLabel="Morto"></nz-option>
+                                <nz-option nzValue="missing" nzLabel="Desaparecido(a)"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzFor="type">Papel</nz-form-label>
+                        <nz-form-control>
+                            <nz-select formControlName="type" class=" type-select">
+                                <nz-option nzValue="protagonist" nzLabel="Protagonista"></nz-option>
+                                <nz-option nzValue="extra" nzLabel="Figurante"></nz-option>
+                                <nz-option nzValue="oponnent" nzLabel="Oponente"></nz-option>
+                                <nz-option nzValue="antagonist" nzLabel="Antagonista"></nz-option>
+                                <nz-option nzValue="supporting actor" nzLabel="Coadjuvante"></nz-option>
+                                <nz-option nzValue="co-protagonist" nzLabel="Coprotagonista"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
                 <nz-form-item>
                     <nz-form-label nzFor="origin">Origem</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="Origem do personagem" name="origin" formControlName="origin">
+                        <input nz-input placeholder="Origem do personagem" name="origin" formControlName="origin"
+                            class="origin-input">
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
                     <nz-form-label nzFor="first-epsode" nzRequired>Primeira Aparição</nz-form-label>
                     <nz-form-control>
-                        <nz-input-number [nzMin]="1" formControlName="firstEpisode">
-                            <span nzInputPrefix>Episódio N°</span>
+                        <nz-input-number [nzMin]="1" formControlName="firstEpisode" class="first-episode-input">
+                            <span nzInputPrefix>Ep. N°</span>
                         </nz-input-number>
                     </nz-form-control>
                 </nz-form-item>
-                <nz-form-item>
-                    <nz-form-label nzFor="age">Idade</nz-form-label>
-                    <nz-form-control>
-                        <textarea name="age" nz-input placeholder="Idade do personagem" formControlName="age"></textarea>
-                    </nz-form-control>
-                </nz-form-item>
+                <div class="age-actor-row">
+                    <nz-form-item>
+                        <nz-form-label nzFor="age">Idade</nz-form-label>
+                        <nz-form-control>
+                            <textarea name="age" nz-input placeholder="Idade do personagem"
+                                formControlName="age"></textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzFor="actor">Ator/Atriz</nz-form-label>
+                        <nz-form-control>
+                            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Selecione um ator/atriz">
+                                <nz-option nzLabel="Jack" nzValue="jack"></nz-option>
+                                <nz-option nzLabel="Lucy" nzValue="lucy"></nz-option>
+                                <nz-option nzLabel="Tom" nzValue="tom"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
             </div>
-            <div class="right-block">
+            <div class="rigth-block">
                 <nz-form-item>
-                    <nz-form-label nzFor="biography">Biografia</nz-form-label>
+                    <nz-form-label nzFor="biography" nzNoColon="true">Biografia</nz-form-label>
                     <nz-form-control>
-                        <textarea name="biography" nz-input placeholder="Biografia do personagem" formControlName="biography"></textarea>
+                        <textarea name="biography" nz-input placeholder="Biografia do personagem"
+                            formControlName="biography"></textarea>
                     </nz-form-control>
                 </nz-form-item>
             </div>

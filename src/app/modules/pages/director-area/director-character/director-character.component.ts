@@ -43,7 +43,7 @@ export class DirectorCharacterComponent {
       case 'Cadastrar': {
         const modalRef = this.#modal.create({
           nzContent: CharacterFormComponent,
-          nzWidth: '72vw',
+          nzWidth: '82vw',
           nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
           nzStyle: { top: '10px', width: '1200px' },
           nzData: {
