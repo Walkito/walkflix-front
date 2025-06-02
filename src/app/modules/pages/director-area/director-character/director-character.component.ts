@@ -62,8 +62,12 @@ export class DirectorCharacterComponent {
               type: 'primary',
               onClick: () => {
                 const instance = modalRef.getContentComponent() as CharacterFormComponent
-
+                
                 this.unsubscribeAll();
+                
+                this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+
+                instance.createCharacter();
               }
             }
           ],

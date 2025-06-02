@@ -101,8 +101,7 @@ form {
         flex-direction: column;
         width: 40%;
 
-        ::ng-deep .name-input,
-        .origin-input {
+        ::ng-deep .name-input {
             width: 97%;
         }
 
@@ -129,28 +128,32 @@ form {
         }
 
 
-        ::ng-deep .ant-form-item:nth-child(5) {
+        ::ng-deep .ant-form-item:nth-child(3) {
             width: 100%;
+            display: flex;
+
+            ::ng-deep .ant-select.ant-select-in-form-item {
+                width: 97%;
+            }
         }
 
-        .age-actor-row {
+        .age-origin-row {
             display: flex;
 
             ::ng-deep .ant-form-item:nth-child(1) {
-                width: 30%;
+                width: 50%;
 
                 textarea {
                     resize: none;
-                    width: 100%;
                 }
 
             }
 
             ::ng-deep .ant-form-item:nth-child(2) {
-                width: 70%;
+                width: 50%;
                 margin-left: 2%;
 
-                ::ng-deep .ant-select.ant-select-in-form-item {
+                ::ng-deep .ant-form-item-control-input{
                     width: 94%;
                 }
             }
