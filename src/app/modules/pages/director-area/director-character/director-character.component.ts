@@ -11,6 +11,11 @@ import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { Character } from 'app/modules/interfaces/character';
 import { CharacterFormComponent } from './character-form/character-form.component';
+import { CharacterService } from 'app/shared/services/character.service';
+import { ApiResponse } from 'app/modules/interfaces/api-response';
+import { NotificationService } from 'app/shared/services/notification.service';
+import { SeriesService } from 'app/shared/services/series.service';
+import { ActorService } from 'app/shared/services/actor.service';
 
 @Component({
   selector: 'app-director-character',
@@ -18,14 +23,22 @@ import { CharacterFormComponent } from './character-form/character-form.componen
   templateUrl: './director-character.component.html',
   styleUrl: './director-character.component.scss',
 })
-export class DirectorCharacterComponent {
+export class DirectorCharacterComponent implements OnInit {
   #modal = inject(NzModalService);
   #subscriptions: Subscription[] = [];
+  #characterService = inject(CharacterService);
+  #seriesService = inject(SeriesService);
+  #actorService = inject(ActorService);
+  #descriptionValue: string = '';
+  #filterOptionValue: string = 'codigo';
+  #destroy$ = new Subject<void>();
+  #notificationService = inject(NotificationService);
 
   characters: Character[] = [];
   series: Serie[] = [];
   actors: Actor[] = [];
-  selectedQuantity = signal(0);
+  selectedSeriesQuantity = signal(0);
+  selectedActorsQuantity = signal(0);
 
   filterForm: FormGroup = new FormGroup({
     filterOption: new FormControl<string>('codigo'),
@@ -34,8 +47,22 @@ export class DirectorCharacterComponent {
     selectedActors: new FormControl<Actor[]>([])
   });
 
-  searchCharacter() {
+  ngOnInit(): void {
+    this.formRoutines();
+    this.searchCharacter();
+    this.getSeries();
+    this.getActors();
+  }
 
+  searchCharacter() {
+    switch (this.#filterOptionValue) {
+      case 'codigo':
+        this.getCharacter(Number.parseInt(this.#descriptionValue) | 0, '', this.filterForm.get('selectedSeries')?.value, this.filterForm.get('selectedActors')?.value);
+        break;
+      case 'nome':
+        this.getCharacter(0, this.#descriptionValue, this.filterForm.get('selectedSeries')?.value, this.filterForm.get('selectedActors')?.value);
+        break;
+    }
   }
 
   showModal(option: string, id: number) {
@@ -62,10 +89,11 @@ export class DirectorCharacterComponent {
               type: 'primary',
               onClick: () => {
                 const instance = modalRef.getContentComponent() as CharacterFormComponent
-                
+
                 this.unsubscribeAll();
-                
+
                 this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+                this.#subscriptions.push(instance.searchCharacters.subscribe(() => this.searchCharacter()));
 
                 instance.createCharacter();
               }
@@ -78,9 +106,63 @@ export class DirectorCharacterComponent {
     }
   }
 
+  private getCharacter(id: number, characterName: string, series: Serie[], actors: Actor[]) {
+    this.#characterService.searchCharacters(id, characterName, series, actors).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.characters = response.obj;
+      },
+      error: (error) => {
+        console.log(error);
+        this.#notificationService.createNotification("Erro", "Não foi possível buscar os personagems.", 1);
+      }
+    })
+  }
+
+  private getSeries(){
+    this.#seriesService.getSeries(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.series = response.obj;
+      },
+      error: (error) => {
+        console.log(error);
+        this.#notificationService.createNotification("Erro", "Não foi possível buscar as séries.", 1);
+      }
+    });
+  }
+
+  private getActors(){
+    this.#actorService.getActor(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.actors = response.obj;
+      },
+      error: (error) => {
+        console.log(error);
+        this.#notificationService.createNotification("Erro", "Não foi possível buscar os atores/atrizes.", 1);
+      }
+    });
+  }
+
   private unsubscribeAll() {
     this.#subscriptions.forEach(sub => sub.unsubscribe());
     this.#subscriptions = [];
+  }
+
+  private formRoutines(): void {
+    this.filterForm.get('selectedSeries')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: Serie[]) => {
+      this.selectedSeriesQuantity.set(value.length - 1);
+    });
+
+    this.filterForm.get('selectedActors')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: Actor[]) => {
+      this.selectedActorsQuantity.set(value.length - 1);
+    });
+
+    this.filterForm.get('description')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: string) => {
+      this.#descriptionValue = value;
+    });
+
+    this.filterForm.get('filterOption')?.valueChanges.pipe(takeUntil(this.#destroy$)).subscribe((value: string) => {
+      this.#filterOptionValue = value;
+    });
   }
 }
 

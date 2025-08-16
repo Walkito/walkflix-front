@@ -15,8 +15,8 @@ export class SeriesService {
 
   #http = inject(HttpClient);
 
-  getSeries(id: number, seriesName: string, directors: Actor[], dto: number) {
-    let params: HttpParams = new HttpParams().set('id', id).set('seriesName', seriesName).set('dto', dto);
+  getSeries(id: number, seriesName: string, directors: Actor[]) {
+    let params: HttpParams = new HttpParams().set('id', id).set('seriesName', seriesName);
 
     if (directors && directors.length > 0) {
       directors.forEach(director => {

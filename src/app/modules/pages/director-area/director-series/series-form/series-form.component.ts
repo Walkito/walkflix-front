@@ -85,7 +85,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.create) {
-      this.#seriesService.getSeries(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
+      this.#seriesService.getSeries(this.idSerie, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
           this.#serie = response.obj[0];
 

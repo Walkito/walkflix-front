@@ -236,7 +236,7 @@ export class DirectorSeriesComponent implements OnInit, OnDestroy {
   }
 
   private getSeries(id: number, seriesName: string, directors: Actor[]): void {
-    this.#seriesService.getSeries(id, seriesName, directors, 0).pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#seriesService.getSeries(id, seriesName, directors).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj;
       },

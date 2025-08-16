@@ -65,7 +65,7 @@ export class EpisodeFormComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.#serieService.getSeries(this.idSerie, '', [], 0).pipe(takeUntil(this.#destroy$)).subscribe({
+    this.#serieService.getSeries(this.idSerie, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj[0];
       },
