@@ -15,6 +15,7 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { ActorService } from 'app/shared/services/actor.service';
 import { NotificationService } from 'app/shared/services/notification.service';
 import { ActorFormComponent } from './actor-form/actor-form.component';
+import { SeriesService } from 'app/shared/services/series.service';
 
 @Component({
   selector: 'app-director-actors',
@@ -24,6 +25,7 @@ import { ActorFormComponent } from './actor-form/actor-form.component';
 })
 export class DirectorActorsComponent implements OnInit {
   #actorService = inject(ActorService);
+  #seriesService = inject(SeriesService);
   #notificationService = inject(NotificationService);
   #destroy$ = new Subject<void>();
   #modal = inject(NzModalService);
@@ -44,6 +46,7 @@ export class DirectorActorsComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchActors();
+    this.getSeries();
     this.formRoutines();
   }
 
@@ -133,7 +136,7 @@ export class DirectorActorsComponent implements OnInit {
                       label: 'Sim, tenho certeza',
                       type: 'primary',
                       onClick: () => {
-                        this.deleteSeries(id);
+                        this.deleteActor(id);
 
                         modalRefTwo.close();
                         modalRef.close();
@@ -182,7 +185,7 @@ export class DirectorActorsComponent implements OnInit {
     }
   }
 
-  private deleteSeries(id: number) {
+  private deleteActor(id: number) {
     this.#actorService.deleteActor(id).pipe(takeUntil(this.#destroy$)).subscribe({
       next: () => {
         this.getActor(0, '', []);
@@ -198,6 +201,19 @@ export class DirectorActorsComponent implements OnInit {
   private unsubscribeAll() {
     this.#subscriptions.forEach(sub => sub.unsubscribe());
     this.#subscriptions = [];
+  }
+
+  private getSeries() {
+    this.#seriesService.getSeries(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
+      next: (response: ApiResponse) => {
+        this.series = response.obj;
+      },
+      error: (error) => {
+        if (error.status !== 404) {
+          console.log(error);
+        }
+      }
+    })
   }
 
   private getActor(id: number, txActorName: string, series: Serie[]) {
