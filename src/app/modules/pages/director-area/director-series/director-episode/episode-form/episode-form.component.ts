@@ -124,12 +124,14 @@ export class EpisodeFormComponent implements AfterViewInit {
 
   createEpisode() {
     if (this.validateForms()) {
-      this.#episodeService.createEpisode(this.buildPayload()).pipe(takeUntil(this.#destroy$)).subscribe({
+      const payload = this.buildPayload();
+      
+      this.#episodeService.createEpisode(payload).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
           this.idEpisode = response.obj.id;
 
           if (this.thumbnailDTO.fileName) {
-            this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/thumbnails/`, this.idEpisode, this.thumbnailDTO).subscribe({
+            this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/${payload.nuEpisode}/`, this.idEpisode, this.thumbnailDTO).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
@@ -164,7 +166,7 @@ export class EpisodeFormComponent implements AfterViewInit {
         next: () => {
 
           if (this.thumbnailDTO.fileName) {
-            this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/thumbnails/`, this.idEpisode, this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+            this.#episodeService.uploadEpisodePicture(`series/${this.series.txSeriesName}/episodes/${payload.nuEpisode}/`, this.idEpisode, this.thumbnailDTO).pipe(takeUntil(this.#destroy$)).subscribe({
               error: (error) => {
                 console.log(error);
                 this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);

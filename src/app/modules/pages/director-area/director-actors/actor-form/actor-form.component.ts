@@ -151,7 +151,7 @@ export class ActorFormComponent implements AfterViewInit {
           this.idActor = response.obj.id;
 
           if (this.profilePictureDTO.fileName) {
-            this.#actorService.uploadProfilePicture(`actors/profilePicture/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/`,
+            this.#actorService.uploadProfilePicture(`actors/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/profilePicture/`,
               this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
@@ -179,7 +179,7 @@ export class ActorFormComponent implements AfterViewInit {
           this.idActor = response.obj.id;
 
           if (this.profilePictureDTO.fileName) {
-            this.#actorService.uploadProfilePicture(`actors/profilePicture/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/`,
+            this.#actorService.uploadProfilePicture(`actors/${this.idActor} - ${payload.txActorName} ${payload.txActorSurname}/profilePicture/`,
               this.idActor, this.profilePictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
