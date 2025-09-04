@@ -60,7 +60,7 @@
                         <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Selecione um ator/atriz" formControlName="actor">
                             @for (actor of actors; track actor.id) {
                             <nz-option [nzLabel]="actor.txActorName + ' ' + actor.txActorSurname"
-                                [nzValue]="actor"></nz-option>
+                                [nzValue]="actor.id"></nz-option>
                             }
                         </nz-select>
                     </nz-form-control>

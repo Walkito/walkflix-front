@@ -23,12 +23,12 @@ import { Subject, take, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-character-form',
-  imports: [NzFormModule, NzInputModule, NzInputNumberModule, ReactiveFormsModule, NzSelectModule, NzUploadModule, NzIconModule, NzImageModule, NzAlertModule, NzTabsModule, DatePipe],
+  imports: [NzFormModule, NzInputModule, NzInputNumberModule, ReactiveFormsModule, NzSelectModule, NzUploadModule, NzIconModule, NzImageModule, NzAlertModule, NzTabsModule],
   templateUrl: './character-form.component.html',
   styleUrl: './character-form.component.scss',
   providers: [Utils, DatePipe]
 })
-export class CharacterFormComponent implements OnInit {
+export class CharacterFormComponent implements AfterViewInit {
   @Output() showUpdateButton = new EventEmitter<boolean>();
   @Output() closeModal = new EventEmitter<void>()
   @Output() searchCharacters = new EventEmitter<void>()
@@ -38,10 +38,12 @@ export class CharacterFormComponent implements OnInit {
   #characterService = inject(CharacterService);
   #actionService = inject(ActorService);
   #destroy$ = new Subject<void>();
+  #character: Character = {} as Character;
 
   selectedTab: number = 0;
   title: string = "";
-  actor: Actor = {} as Actor;
+  create: boolean = true;
+  idCharacter: number = 0;
   actors: Actor[] = [];
   imageError: boolean = false;
 
@@ -50,12 +52,15 @@ export class CharacterFormComponent implements OnInit {
     fileName: ''
   }
 
-  constructor(@Optional() @Inject(NZ_MODAL_DATA) public data: { title: string, id: number, create: boolean }) {
+  constructor(@Optional() @Inject(NZ_MODAL_DATA) public data: { title: string, id: number, create: boolean, actors: Actor[] }) {
     if (!data) return;
 
-    const { title, id, create } = data;
+    const { title, id, create, actors } = data;
 
     this.title = title;
+    this.create = create;
+    this.idCharacter = id;
+    this.actors = actors;
   }
 
   characterForm: FormGroup = new FormGroup({
@@ -66,11 +71,13 @@ export class CharacterFormComponent implements OnInit {
     firstEpisode: new FormControl<number>(1),
     age: new FormControl<string>(''),
     biography: new FormControl<string>(''),
-    actor: new FormControl<Actor>(this.actor || {} as Actor)
+    actor: new FormControl<Actor>({} as Actor)
   });
 
-  ngOnInit(): void {
-    this.getActors();
+  ngAfterViewInit(): void {
+    if (!this.create) {
+      this.getCharacter();
+    }
   }
 
   createCharacter() {
@@ -80,8 +87,8 @@ export class CharacterFormComponent implements OnInit {
       this.#characterService.createCharacter(payload).pipe(takeUntil(this.#destroy$)).subscribe({
         next: (response: ApiResponse) => {
           if (this.characterPictureDTO.fileName) {
-            this.#characterService.uploadCharacterImage(`characters/${this.actor.id} - ${this.actor.txActorName}
-               ${this.actor.txActorSurname}/portrait/`, response.obj.id,
+            this.#characterService.uploadCharacterImage(`characters/${payload.actor.id} - ${payload.actor.txActorName}
+               ${payload.actor.txActorSurname}/portrait/`, response.obj.id,
               this.characterPictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
@@ -90,7 +97,7 @@ export class CharacterFormComponent implements OnInit {
                 }
               });
           }
-          
+
           this.closeModal.emit();
           this.searchCharacters.emit();
 
@@ -103,6 +110,10 @@ export class CharacterFormComponent implements OnInit {
         }
       })
     }
+  }
+
+  editCharacter() {
+
   }
 
   handleChange(file: NzUploadChangeParam, type: number) {
@@ -122,21 +133,53 @@ export class CharacterFormComponent implements OnInit {
     }
   }
 
-  private getActors(): void {
-    this.#actionService.getActor(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
+  private getCharacter(): void {
+    this.#characterService.searchCharacters(this.idCharacter, '', [], []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
-        this.actors = response.obj;
+        this.#character = response.obj[0];
+
+        this.characterForm.patchValue({
+          characterName: this.#character.txCharacterName,
+          status: this.#character.tpCharacterStatus,
+          type: this.#character.tpCharacterType,
+          origin: this.#character.txOrigin,
+          firstEpisode: this.#character.nuFirstEpisode,
+          age: this.#character.txAge,
+          biography: this.#character.txBiography,
+          actor: this.#character.actor.id
+        })
+
+        this.#utils.downloadAndConvertToBase64(this.#character.txCharacterPicture).pipe(takeUntil(this.#destroy$)).subscribe({
+          next: blob => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+
+            reader.onloadend = () => {
+              this.characterPictureDTO.imageB64 = reader.result as string;
+            };
+          },
+          error: error => {
+            if (error.status !== 404) {
+              console.log(error);
+            }
+          }
+        });
       },
       error: (error) => {
-        console.log(error);
+        if (error.status !== 404) {
+          console.log(error);
+        }
       }
     });
   }
 
   private buildPayload(): Character {
+    const selectedActorId: number = this.characterForm.get('actor')?.value;
+    const actor: Actor = this.actors.filter(id => id.id === selectedActorId)[0];
+
     const payload: Character = {
       id: 0,
-      actor: this.characterForm.get('actor')?.value,
+      actor: actor,
       txCharacterName: this.characterForm.get('characterName')?.value,
       nuFirstEpisode: this.characterForm.get('firstEpisode')?.value,
       tpCharacterStatus: this.characterForm.get('status')?.value,

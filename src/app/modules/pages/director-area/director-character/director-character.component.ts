@@ -16,6 +16,7 @@ import { ApiResponse } from 'app/modules/interfaces/api-response';
 import { NotificationService } from 'app/shared/services/notification.service';
 import { SeriesService } from 'app/shared/services/series.service';
 import { ActorService } from 'app/shared/services/actor.service';
+import { create } from 'domain';
 
 @Component({
   selector: 'app-director-character',
@@ -33,6 +34,7 @@ export class DirectorCharacterComponent implements OnInit {
   #filterOptionValue: string = 'codigo';
   #destroy$ = new Subject<void>();
   #notificationService = inject(NotificationService);
+  #showUpdateButton: boolean = true;
 
   characters: Character[] = [];
   series: Serie[] = [];
@@ -74,7 +76,9 @@ export class DirectorCharacterComponent implements OnInit {
           nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
           nzStyle: { top: '10px', width: '1200px' },
           nzData: {
-            title: 'Cadastrar Personagem'
+            title: 'Cadastrar Personagem',
+            create: true,
+            actors: this.actors
           },
           nzFooter: [
             {
@@ -103,6 +107,80 @@ export class DirectorCharacterComponent implements OnInit {
         });
         break;
       }
+      case 'Atualizar': {
+        const modalRef = this.#modal.create({
+          nzContent: CharacterFormComponent,
+          nzWidth: '82vw',
+          nzBodyStyle: { overflowY: 'auto', maxHeight: 'calc(100vh - 87px)' },
+          nzStyle: { top: '10px', width: '1200px' },
+          nzData: {
+            title: 'Atualizar Personagem',
+            id: id,
+            create: false,
+            actors: this.actors
+          },
+          nzFooter: [
+            {
+              label: 'Voltar',
+              type: 'default',
+              onClick: () => {
+                modalRef.close();
+              }
+            },
+            {
+              label: 'Excluir',
+              type: 'primary',
+              danger: true,
+              show: () => this.#showUpdateButton,
+              onClick: () => {
+                const modalRefTwo = this.#modal.create({
+                  nzTitle: 'Atenção',
+                  nzContent: 'Deseja realmente excluir este Ator/Atriz?',
+                  nzFooter: [
+                    {
+                      label: 'Cancelar',
+                      type: 'default',
+                      onClick: () => {
+                        modalRefTwo.close();
+                      }
+                    },
+                    {
+                      label: 'Sim, tenho certeza',
+                      type: 'primary',
+                      onClick: () => {
+                        //this.deleteActor(id);
+
+                        modalRefTwo.close();
+                        modalRef.close();
+                      }
+                    }
+                  ]
+                });
+              }
+            },
+            {
+              label: 'Atualizar',
+              type: 'primary',
+              show: () => !!this.#showUpdateButton,
+              onClick: () => {
+                const instance = modalRef.getContentComponent() as CharacterFormComponent
+
+                this.unsubscribeAll();
+
+                this.#subscriptions.push(instance.closeModal.subscribe(() => modalRef.close()));
+                this.#subscriptions.push(instance.searchCharacters.subscribe(() => this.searchCharacter()));
+
+                instance.editCharacter();
+              }
+            }
+          ],
+          nzClosable: false
+        });
+
+        const instance = modalRef.getContentComponent() as CharacterFormComponent;
+        this.#subscriptions.push(instance.showUpdateButton.subscribe((valor) => this.#showUpdateButton = valor));
+        break;
+      }
     }
   }
 
@@ -118,7 +196,7 @@ export class DirectorCharacterComponent implements OnInit {
     })
   }
 
-  private getSeries(){
+  private getSeries() {
     this.#seriesService.getSeries(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.series = response.obj;
@@ -130,7 +208,7 @@ export class DirectorCharacterComponent implements OnInit {
     });
   }
 
-  private getActors(){
+  private getActors() {
     this.#actorService.getActor(0, '', []).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.actors = response.obj;
