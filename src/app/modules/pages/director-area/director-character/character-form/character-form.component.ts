@@ -88,7 +88,7 @@ export class CharacterFormComponent implements AfterViewInit {
         next: (response: ApiResponse) => {
           if (this.characterPictureDTO.fileName) {
             this.#characterService.uploadCharacterImage(`characters/${payload.actor.id} - ${payload.actor.txActorName}
-               ${payload.actor.txActorSurname}/portrait/`, response.obj.id,
+               ${payload.actor.txActorSurname}/${payload.txCharacterName}/portrait/`, response.obj.id,
               this.characterPictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
                 error: (error) => {
                   console.log(error);
@@ -113,7 +113,35 @@ export class CharacterFormComponent implements AfterViewInit {
   }
 
   editCharacter() {
+    if(this.validateForms()){
+      const payload : Character = this.buildPayload();
 
+      this.#characterService.editCharacter(this.idCharacter, payload).pipe(takeUntil(this.#destroy$)).subscribe({
+        next: () => {
+          if(this.characterPictureDTO.fileName) {
+            this.#characterService.uploadCharacterImage(`characters/${payload.actor.id} - ${payload.actor.txActorName}
+                ${payload.actor.txActorSurname}/${payload.txCharacterName}/portrait/`, this.idCharacter, 
+                this.characterPictureDTO).pipe(takeUntil(this.#destroy$)).subscribe({
+                  error: (error) => {
+                    console.log(error);
+                    this.#notificationService.createNotification('Imagem não enviada', 'Erro ao enviar a imagem: ' + error.error.txMessage, 1);
+                    this.imageError = true;
+                  }
+                });
+          }
+
+          this.closeModal.emit();
+          this.searchCharacters.emit();
+
+          this.#notificationService.createNotification('Sucesso', 'Personagem editado com sucesso', 0);
+        },
+        error: (error) => {
+          console.log(error);
+          this.#notificationService.createNotification("Erro ao Editar o Personagem", `Não foi possível editar 
+            o personagem. Error: ${error.error.txMessage}`, 1);
+        }
+      })
+    }
   }
 
   handleChange(file: NzUploadChangeParam, type: number) {

@@ -19,6 +19,12 @@ export class CharacterService {
     return this.#http.post<ApiResponse>(`${this.apiPath}`, character);
   }
 
+  editCharacter(id: number, payload: Character): Observable<ApiResponse> {
+    const params: HttpParams = new HttpParams().set('id', id);
+
+    return this.#http.put<ApiResponse>(`${this.apiPath}`, payload, { params })
+  }
+  
   uploadCharacterImage(path: string, id: number, imageDTO: ImageDTO): Observable<ApiResponse> {
     const params: HttpParams = new HttpParams().set('path', path).set('id', id);
 

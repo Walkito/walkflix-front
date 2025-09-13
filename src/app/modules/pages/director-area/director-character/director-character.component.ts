@@ -135,7 +135,7 @@ export class DirectorCharacterComponent implements OnInit {
               onClick: () => {
                 const modalRefTwo = this.#modal.create({
                   nzTitle: 'Atenção',
-                  nzContent: 'Deseja realmente excluir este Ator/Atriz?',
+                  nzContent: 'Deseja realmente excluir este Personagem?',
                   nzFooter: [
                     {
                       label: 'Cancelar',
