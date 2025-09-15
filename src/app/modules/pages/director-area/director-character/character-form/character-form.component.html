@@ -65,14 +65,21 @@
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>
-                <nz-form-item>
-                    <nz-form-label nzFor="first-epsode" nzRequired>Primeira Aparição</nz-form-label>
-                    <nz-form-control>
-                        <nz-input-number [nzMin]="1" formControlName="firstEpisode" class="first-episode-input">
-                            <span nzInputPrefix>Ep. N°</span>
-                        </nz-input-number>
-                    </nz-form-control>
-                </nz-form-item>
+                <div class="fourth-row">
+                    <nz-form-item>
+                        <nz-form-label nzFor="first-epsode" nzRequired>Primeira Aparição</nz-form-label>
+                        <nz-form-control>
+                            <nz-input-number [nzMin]="1" formControlName="firstEpisode" class="first-episode-input">
+                                <span nzInputPrefix>Ep. N°</span>
+                            </nz-input-number>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-control>
+                            <label nz-checkbox formControlName="isNpc">NPC</label>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
                 <div class="age-origin-row">
                     <nz-form-item>
                         <nz-form-label nzFor="age">Idade</nz-form-label>

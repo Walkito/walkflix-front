@@ -11,4 +11,5 @@ export interface Character{
   txBiography: string;
   txCharacterPicture: string;
   actor: Actor;
+  tpNpc: boolean;
 }

@@ -188,6 +188,9 @@ export class DirectorCharacterComponent implements OnInit {
     this.#characterService.searchCharacters(id, characterName, series, actors).pipe(takeUntil(this.#destroy$)).subscribe({
       next: (response: ApiResponse) => {
         this.characters = response.obj;
+        this.characters.forEach((character, index) => {
+          this.characters[index].tpCharacterType = character.tpCharacterType.charAt(0) + character.tpCharacterType.slice(1).toLowerCase();
+        })
       },
       error: (error) => {
         console.log(error);

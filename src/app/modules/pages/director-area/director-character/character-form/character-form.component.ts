@@ -20,10 +20,11 @@ import { NzOptionComponent, NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTabComponent, NzTabSetComponent, NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzUploadChangeParam, NzUploadComponent, NzUploadModule } from 'ng-zorro-antd/upload';
 import { Subject, take, takeUntil } from 'rxjs';
+import { NzCheckboxComponent } from "ng-zorro-antd/checkbox";
 
 @Component({
   selector: 'app-character-form',
-  imports: [NzFormModule, NzInputModule, NzInputNumberModule, ReactiveFormsModule, NzSelectModule, NzUploadModule, NzIconModule, NzImageModule, NzAlertModule, NzTabsModule],
+  imports: [NzFormModule, NzInputModule, NzInputNumberModule, ReactiveFormsModule, NzSelectModule, NzUploadModule, NzIconModule, NzImageModule, NzAlertModule, NzTabsModule, NzCheckboxComponent],
   templateUrl: './character-form.component.html',
   styleUrl: './character-form.component.scss',
   providers: [Utils, DatePipe]
@@ -36,7 +37,6 @@ export class CharacterFormComponent implements AfterViewInit {
   #utils = inject(Utils);
   #notificationService = inject(NotificationService);
   #characterService = inject(CharacterService);
-  #actionService = inject(ActorService);
   #destroy$ = new Subject<void>();
   #character: Character = {} as Character;
 
@@ -71,7 +71,8 @@ export class CharacterFormComponent implements AfterViewInit {
     firstEpisode: new FormControl<number>(1),
     age: new FormControl<string>(''),
     biography: new FormControl<string>(''),
-    actor: new FormControl<Actor>({} as Actor)
+    actor: new FormControl<Actor>({} as Actor),
+    isNpc: new FormControl<boolean>(false)
   });
 
   ngAfterViewInit(): void {
@@ -174,7 +175,8 @@ export class CharacterFormComponent implements AfterViewInit {
           firstEpisode: this.#character.nuFirstEpisode,
           age: this.#character.txAge,
           biography: this.#character.txBiography,
-          actor: this.#character.actor.id
+          actor: this.#character.actor.id,
+          isNpc: this.#character.tpNpc
         })
 
         this.#utils.downloadAndConvertToBase64(this.#character.txCharacterPicture).pipe(takeUntil(this.#destroy$)).subscribe({
@@ -215,6 +217,7 @@ export class CharacterFormComponent implements AfterViewInit {
       txAge: this.characterForm.get('age')?.value,
       txOrigin: this.characterForm.get('origin')?.value,
       txBiography: this.characterForm.get('biography')?.value,
+      tpNpc: this.characterForm.get('isNpc')?.value,
       txCharacterPicture: ''
     }
 

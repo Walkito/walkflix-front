@@ -137,6 +137,14 @@ form {
             }
         }
 
+        .fourth-row{
+            display: flex;
+
+            ::ng-deep .ant-form-item:nth-child(1){
+                width: 55%;
+            }
+        }
+
         .age-origin-row {
             display: flex;
 
