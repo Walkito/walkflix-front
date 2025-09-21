@@ -8,7 +8,7 @@
                 <nz-form-item>
                     <nz-form-control>
                         <div class="image-vertical-border">
-                            <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 0)"
+                            <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event)"
                                 [nzShowUploadList]="false">
                                 @if (!characterPictureDTO.imageB64) {
                                 <nz-icon class="upload-icon" nzType="plus" />

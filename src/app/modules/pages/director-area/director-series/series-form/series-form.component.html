@@ -10,7 +10,7 @@
           <nz-form-control>
             <div class="image-vertical-border">
               <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 0)"
-                [nzShowUploadList]="false">
+                [nzShowUploadList]="false" [nzMultiple]="false">
                 @if (!posterDTO.imageB64) {
                 <nz-icon class="upload-icon" nzType="plus" />
                 <div class="ant-upload-text">Enviar</div>
@@ -26,7 +26,7 @@
           <nz-form-control>
             <div class="image-horizontal-border">
               <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 1)"
-                [nzShowUploadList]="false">
+                [nzShowUploadList]="false" [nzMultiple]="false">
                 @if (!bannerDTO.imageB64) {
                 <nz-icon class="upload-icon" nzType="plus" />
                 <div class="ant-upload-text">Enviar</div>
@@ -42,7 +42,7 @@
           <nz-form-control>
             <div class="image-horizontal-border">
               <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 2)"
-                [nzShowUploadList]="false">
+                [nzShowUploadList]="false" [nzMultiple]="false">
                 @if (!thumbnailDTO.imageB64) {
                 <nz-icon class="upload-icon" nzType="plus" />
                 <div class="ant-upload-text">Enviar</div>

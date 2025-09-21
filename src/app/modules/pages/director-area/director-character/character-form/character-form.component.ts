@@ -21,6 +21,7 @@ import { NzTabComponent, NzTabSetComponent, NzTabsModule } from 'ng-zorro-antd/t
 import { NzUploadChangeParam, NzUploadComponent, NzUploadModule } from 'ng-zorro-antd/upload';
 import { Subject, take, takeUntil } from 'rxjs';
 import { NzCheckboxComponent } from "ng-zorro-antd/checkbox";
+import { ImageResizerService } from 'app/shared/services/image-resizer.service';
 
 @Component({
   selector: 'app-character-form',
@@ -36,6 +37,7 @@ export class CharacterFormComponent implements AfterViewInit {
 
   #utils = inject(Utils);
   #notificationService = inject(NotificationService);
+  #imageResizerService = inject(ImageResizerService);
   #characterService = inject(CharacterService);
   #destroy$ = new Subject<void>();
   #character: Character = {} as Character;
@@ -145,8 +147,9 @@ export class CharacterFormComponent implements AfterViewInit {
     }
   }
 
-  handleChange(file: NzUploadChangeParam, type: number) {
-    this.#utils.getBase64(file.file!.originFileObj!, (img: string) => {
+  async handleChange(file: NzUploadChangeParam) {
+    const resizedFile: File = await this.#imageResizerService.resizeImage(file.file!.originFileObj!, 411, 411);
+    this.#utils.getBase64(resizedFile, (img: string) => {
       this.characterPictureDTO.imageB64 = img;
     });
     this.characterPictureDTO.fileName = file.file.name;
