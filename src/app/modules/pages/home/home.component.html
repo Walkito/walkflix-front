@@ -2,4 +2,13 @@
   <div class="main-banner">
     <img src="images/banners/8 - Reliquias do Passado.jpg" alt="O banner principal da Série Reliquias do Passado">
   </div>
+  <div class="main-carousel">
+    <nz-carousel nzEffect="effect">
+      @for (index of array; track index){
+        <div nz-carousel-content>
+          <h3>{{ index }}</h3>
+        </div>
+      }
+    </nz-carousel>
+  </div>
 </main>

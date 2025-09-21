@@ -1,5 +1,6 @@
 main {
   display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -19,6 +20,12 @@ main {
         height: 100%;
         object-fit: cover;
       }
+    }
+
+    .main-carousel{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
     }
 
 }
