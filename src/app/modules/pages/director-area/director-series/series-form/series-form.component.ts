@@ -21,6 +21,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NotificationService } from 'app/shared/services/notification.service';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DirectorEpisodeComponent } from '../director-episode/director-episode.component';
+import { ImageResizerService } from 'app/shared/services/image-resizer.service';
 
 @Component({
   selector: 'app-series-form',
@@ -40,6 +41,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
   #destroy$ = new Subject<void>();
   #notificationService = inject(NotificationService);
   #serie: Serie = {} as Serie;
+  #imageResizerService = inject(ImageResizerService);
 
   selectedTab: number = 0;
   create: boolean = false;
@@ -175,16 +177,19 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
     this.changeURLs(file, type);
   }
 
-  changeURLs(info: { file: NzUploadFile }, type: number): void {
+  async changeURLs(info: { file: NzUploadFile }, type: number): Promise<void> {
+    let resizedFile: File;
     switch (type) {
       case 0: {
-        this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
+        resizedFile = await this.#imageResizerService.resizeImage(info.file!.originFileObj!, 832, 1472);
+        this.#utils.getBase64(resizedFile, (img: string) => {
           this.posterDTO.imageB64 = img;
         });
         this.posterDTO.fileName = info.file.name;
         break;
       }
       case 1: {
+        resizedFile = await this.#imageResizerService.resizeImage(info.file!.originFileObj!, 1776, 1008);
         this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
           this.bannerDTO.imageB64 = img;
         });
@@ -192,6 +197,7 @@ export class SeriesFormComponent implements OnInit, OnDestroy {
         break;
       }
       case 2: {
+        resizedFile = await this.#imageResizerService.resizeImage(info.file!.originFileObj!, 341, 192);
         this.#utils.getBase64(info.file!.originFileObj!, (img: string) => {
           this.thumbnailDTO.imageB64 = img;
         });

@@ -8,8 +8,8 @@
         <nz-form-item>
           <nz-form-control>
             <div class="image-vertical-border">
-              <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event, 0)"
-                [nzShowUploadList]="false">
+              <nz-upload [nzDisabled]="false" class="image-upload" (nzChange)="handleChange($event)"
+                [nzShowUploadList]="false" [nzMultiple]="false">
                 @if (!profilePictureDTO.imageB64) {
                 <nz-icon class="upload-icon" nzType="plus" />
                 <div class="ant-upload-text">Enviar</div>

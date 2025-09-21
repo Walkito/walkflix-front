@@ -21,6 +21,7 @@ import { ImageDTO } from 'app/modules/interfaces/image-dto';
 import { Actor } from 'app/modules/interfaces/actor';
 import { ActorSeriesComponent } from "../actor-series/actor-series.component";
 import { ActorCharacterComponent } from "../actor-character/actor-character.component";
+import { ImageResizerService } from 'app/shared/services/image-resizer.service';
 
 @Component({
   selector: 'app-actor-form',
@@ -38,6 +39,7 @@ export class ActorFormComponent implements AfterViewInit {
   #utils = inject(Utils);
   #actorService = inject(ActorService);
   #notificationService = inject(NotificationService);
+  #imageResizerService = inject(ImageResizerService);
   #destroy$ = new Subject<void>();
   #actor: Actor = {} as Actor;
 
@@ -93,8 +95,9 @@ export class ActorFormComponent implements AfterViewInit {
     }
   }
 
-  handleChange(file: NzUploadChangeParam, type: number) {
-    this.#utils.getBase64(file.file!.originFileObj!, (img: string) => {
+  async handleChange(file: NzUploadChangeParam) {
+    const resizedFile: File = await this.#imageResizerService.resizeImage(file.file!.originFileObj!, 539, 540);
+    this.#utils.getBase64(resizedFile, (img: string) => {
       this.profilePictureDTO.imageB64 = img;
     });
     this.profilePictureDTO.fileName = file.file.name;
